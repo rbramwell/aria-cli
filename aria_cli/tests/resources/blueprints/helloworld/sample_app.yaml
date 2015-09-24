@@ -1,0 +1,39 @@
+
+node_types:
+    type1:
+        interfaces:
+            interface1:
+                install:
+                    implementation: plugin.tasks.install
+                    inputs: {}
+                start:
+                    implementation: plugin.tasks.start
+                    inputs: {}
+
+        properties:
+            prop1:
+                default: true
+            prop2:
+                default: {}
+            prop3:
+                default: ''
+
+    type2:
+        derived_from: type1
+        properties:
+            prop1:
+                default: true
+            prop2:
+                default:
+                    sub_prop1: val1
+                    sub_prop2: val2
+    type3:
+        derived_from: type2
+
+plugins:
+    plugin:
+        executor: central_deployment_agent
+        source: plugin_url.zip
+
+relationships:
+    relationship_type1: {}
