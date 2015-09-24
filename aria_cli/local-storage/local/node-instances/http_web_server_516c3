@@ -1,1 +1,0 @@
-{"relationships": [{"target_name": "vm", "target_id": "vm_f9415", "type": "cloudify.relationships.contained_in"}], "name": "http_web_server", "runtime_properties": {}, "node_id": "http_web_server", "version": 0, "host_id": "vm_f9415", "id": "http_web_server_516c3"}
