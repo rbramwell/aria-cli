@@ -21,8 +21,6 @@ import os
 import json
 import tempfile
 
-import yaml
-import nose
 
 from cloudify.decorators import operation, workflow
 from cloudify import ctx as op_ctx
@@ -30,7 +28,6 @@ from cloudify.exceptions import CommandExecutionException
 from cloudify.workflows import ctx as workflow_ctx
 from dsl_parser.constants import HOST_TYPE
 
-from aria_cli import utils
 from aria_cli import common
 
 from aria_cli.tests import cli_runner
@@ -71,7 +68,6 @@ class LocalTest(CliCommandTest):
         self._local_execute()
         output = cli_runner.run_cli('cfy local outputs')
         self.assertIn('"param": "default_param"', output)
-
 
     def test_local_init_install_plugins(self):
 
@@ -254,7 +250,6 @@ class LocalTest(CliCommandTest):
         blueprint_path = '{0}/local/windows_installers_blueprint.yaml'\
             .format(BLUEPRINTS_DIR)
         cli_runner.run_cli('cfy local init -p {0}'.format(blueprint_path))
-
 
     def _local_init(self,
                     inputs=None,

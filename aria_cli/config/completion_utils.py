@@ -56,5 +56,3 @@ def workflow_id_completer(prefix, parsed_args, **kwargs):
     workflows = rest_client.deployments.get(
         deployment_id, _include=['workflows']).workflows
     return (wf.id for wf in workflows if wf.id.startswith(prefix))
-
-

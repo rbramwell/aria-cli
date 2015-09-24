@@ -1,4 +1,4 @@
-########
+# #######
 # Copyright (c) 2015 GigaSpaces Technologies Ltd. All rights reserved
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -28,7 +28,6 @@ from cloudify import logs
 
 @ patch('aria_cli.utils.is_initialized', lambda: True)
 class TestCLIColors(unittest.TestCase):
-
     def setUp(self):
         self.config_file_path = tempfile.mkstemp()[1]
 
@@ -36,7 +35,7 @@ class TestCLIColors(unittest.TestCase):
             yaml.dump({'colors': True}, f)
 
         patcher = patch('aria_cli.utils.get_configuration_path',
-                             lambda: self.config_file_path)
+                        lambda: self.config_file_path)
         self.addCleanup(patcher.stop)
         patcher.start()
 
@@ -66,7 +65,6 @@ class TestCLIColors(unittest.TestCase):
 
 
 class TestColorfulEvent(unittest.TestCase):
-
     def test_simple_property_color(self):
         event = {
             'timestamp': 'mock-timestamp'

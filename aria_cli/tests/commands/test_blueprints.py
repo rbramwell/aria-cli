@@ -28,7 +28,6 @@ class BlueprintsTest(CliCommandTest):
         super(BlueprintsTest, self).setUp()
         self._create_cosmo_wd_settings()
 
-
     def test_blueprint_validate(self):
         cli_runner.run_cli('cfy blueprints validate '
                            '-p {0}/helloworld/blueprint.yaml'
