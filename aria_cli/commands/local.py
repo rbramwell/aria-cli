@@ -14,7 +14,7 @@
 #    * limitations under the License.
 
 """
-Handles 'cfy local'
+Handles 'aria local'
 """
 
 import json
@@ -26,7 +26,7 @@ from aria_cli import exceptions
 from aria_cli import common
 from aria_cli import utils
 from aria_cli.logger import get_logger
-from aria_cli.commands import init as cfy_init
+from aria_cli.commands import init as aria_init
 
 
 _NAME = 'local'
@@ -40,7 +40,7 @@ def init(blueprint_path,
         shutil.rmtree(_storage_dir())
 
     if not utils.is_initialized():
-        cfy_init.init(reset_config=False, skip_logging=True)
+        aria_init.init(reset_config=False, skip_logging=True)
     try:
         common.initialize_blueprint(
             blueprint_path=blueprint_path,
@@ -58,16 +58,16 @@ def init(blueprint_path,
         # TODO - all of our exceptions. so that we
         # TODO - easily identify them here
         e.possible_solutions = [
-            "Run 'cfy local init --install-plugins -p {0}'"
+            "Run 'aria local init --install-plugins -p {0}'"
             .format(blueprint_path),
-            "Run 'cfy local install-plugins -p {0}'"
+            "Run 'aria local install-plugins -p {0}'"
             .format(blueprint_path)
         ]
         raise
 
     get_logger().info("Initiated {0}\nIf you make changes to the "
                       "blueprint, "
-                      "run 'cfy local init -p {0}' "
+                      "run 'aria local init -p {0}' "
                       "again to apply them"
                       .format(blueprint_path))
 
@@ -163,7 +163,7 @@ def _load_env():
         # suggest solution.
 
         error.possible_solutions = [
-            "Run 'cfy local init' in this directory"
+            "Run 'aria local init' in this directory"
         ]
         raise error
     return local.load_env(name=_NAME,

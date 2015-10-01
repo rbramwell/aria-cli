@@ -168,7 +168,7 @@ class CliInvocationTest(unittest.TestCase):
     def _test_all_combinations(self, command_path):
         possible_commands = get_combinations(command_path)
         for command in possible_commands:
-            cli_runner.run_cli('cfy {0}'.format(command))
+            cli_runner.run_cli('aria {0}'.format(command))
 
     @nottest
     # excluded these tests since the number of possible parameters
@@ -185,7 +185,7 @@ class CliInvocationTest(unittest.TestCase):
         for command in all_commands:
             possible_commands = get_combinations(command)
             for possible_command in possible_commands:
-                cli_runner.run_cli('cfy {0}'.format(possible_command))
+                cli_runner.run_cli('aria {0}'.format(possible_command))
 
     @nottest
     def test_all_commands_help(self):
@@ -197,10 +197,10 @@ class CliInvocationTest(unittest.TestCase):
         all_commands = get_all_commands()
         for command in all_commands:
             cli_runner.run_cli_expect_system_exit_0(
-                'cfy {0} -h'.format(command)
+                'aria {0} -h'.format(command)
             )
             cli_runner.run_cli_expect_system_exit_0(
-                'cfy {0} --help'.format(command)
+                'aria {0} --help'.format(command)
             )
 
     @nottest
@@ -215,8 +215,8 @@ class CliInvocationTest(unittest.TestCase):
             possible_commands = get_combinations(command)
             for possible_command in possible_commands:
                 cli_runner.run_cli(
-                    'cfy {0} -v'.format(possible_command)
+                    'aria {0} -v'.format(possible_command)
                 )
                 cli_runner.run_cli(
-                    'cfy {0} --verbose'.format(possible_command)
+                    'aria {0} --verbose'.format(possible_command)
                 )

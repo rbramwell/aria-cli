@@ -19,9 +19,8 @@
 
 # flake8: noqa
 
-# from aria_cli.commands import dev as dev_module
 
-# import cfy actions
+# import  actions
 from aria_cli.commands.version import VersionAction as version
 
 

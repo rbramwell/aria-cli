@@ -9,4 +9,4 @@ ARIA's Command Line Interface.
 
 ## Usage
 
-See [ARIA CLI](http://cloudify-cli.readthedocs.org/en/latest/)
+See [ARIA CLI](http://aria-cli.readthedocs.org/en/latest/)

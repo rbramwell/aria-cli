@@ -31,7 +31,7 @@ setup(
         ],
     },
     license='LICENSE',
-    description='Cloudify CLI',
+    description='ARIA CLI',
     entry_points={
         'console_scripts': [
             'aria = aria_cli.cli:main',

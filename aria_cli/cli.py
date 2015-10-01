@@ -63,7 +63,7 @@ def register_commands():
     parser_conf = parser_config()
     parser = argparse.ArgumentParser(description=parser_conf['description'])
 
-    # Direct arguments for the 'cfy' command (like -v)
+    # Direct arguments for the 'aria' command (like -v)
     for argument_name, argument in parser_conf['arguments'].iteritems():
         parser.add_argument(argument_name, **argument)
 
@@ -72,8 +72,7 @@ def register_commands():
 
         if 'sub_commands' in command:
 
-            # Add sub commands. Such as 'cfy blueprints list',
-            # 'cfy deployments create' ...
+            # Add sub commands. Such as 'aria blueprints list',
             controller_help = command['help']
             controller_parser = subparsers.add_parser(
                 command_name, help=controller_help
@@ -86,7 +85,7 @@ def register_commands():
                                  controller_sub_command)
         else:
 
-            # Add direct commands. Such as 'cfy status', 'cfy ssh' ...
+            # Add direct commands.
             register_command(subparsers, command_name, command)
 
     return parser

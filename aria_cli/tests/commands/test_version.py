@@ -14,7 +14,7 @@
 #    * limitations under the License.
 
 """
-Tests 'cfy --version'
+Tests 'aria --version'
 """
 
 from aria_cli.tests import cli_runner
@@ -24,4 +24,4 @@ from aria_cli.tests.commands.test_cli_command import CliCommandTest
 class VersionTest(CliCommandTest):
 
     def test_version(self):
-        cli_runner.run_cli_expect_system_exit_0('cfy --version')
+        cli_runner.run_cli_expect_system_exit_0('aria --version')

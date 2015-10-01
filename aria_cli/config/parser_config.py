@@ -17,7 +17,7 @@
 
 import argparse
 
-from aria_cli import commands as cfy
+from aria_cli import commands as aria
 from aria_cli.config import completion_utils
 from aria_cli.config import argument_utils
 
@@ -41,7 +41,7 @@ def parser_config():
         'arguments': {
             '--version': {
                 'help': 'show version information and exit',
-                'action': cfy.version
+                'action': aria.version
             }
         },
         'commands': {
@@ -61,7 +61,7 @@ def parser_config():
                             }
                         },
                         'help': 'command for validating a blueprint',
-                        'handler': cfy.blueprints.validate
+                        'handler': aria.blueprints.validate
                     }
                 }
             },
@@ -93,7 +93,7 @@ def parser_config():
                                 'help': 'Install necessary plugins of the given blueprint.'
                             }
                         },
-                        'handler': cfy.local.init
+                        'handler': aria.local.init
                     },
                     'install-plugins': {
                         'help': 'Installs the necessary plugins for a given blueprint',
@@ -106,7 +106,7 @@ def parser_config():
                                 'help': 'Path to a blueprint'
                             }
                         },
-                        'handler': cfy.local.install_plugins
+                        'handler': aria.local.install_plugins
                     },
                     'create-requirements': {
                         'help': 'Creates a PIP compliant requirements file for the given blueprint',
@@ -126,7 +126,7 @@ def parser_config():
                                         'requirements of the blueprint'
                             }
                         },
-                        'handler': cfy.local.create_requirements
+                        'handler': aria.local.create_requirements
                     },
                     'execute': {
                         'help': 'Execute a workflow locally',
@@ -176,12 +176,12 @@ def parser_config():
                                 'help': 'The size of the thread pool size to execute tasks in'
                             }
                         },
-                        'handler': cfy.local.execute
+                        'handler': aria.local.execute
                     },
                     'outputs': {
                         'help': 'Display outputs',
                         'arguments': {},
-                        'handler': cfy.local.outputs
+                        'handler': aria.local.outputs
                     },
                     'instances': {
                         'help': 'Display node instances',
@@ -195,7 +195,7 @@ def parser_config():
                                 'help': 'Only display node instances of this node id'
                             }
                         },
-                        'handler': cfy.local.instances
+                        'handler': aria.local.instances
                     }
                 }
             }

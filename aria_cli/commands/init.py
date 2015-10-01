@@ -14,7 +14,7 @@
 #    * limitations under the License.
 
 """
-Handles 'cfy init'
+Handles 'aria init'
 """
 
 import os

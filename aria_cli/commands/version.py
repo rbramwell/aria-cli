@@ -14,7 +14,7 @@
 #    * limitations under the License.
 
 """
-Handles 'cfy --version'
+Handles 'aria --version'
 """
 
 import argparse

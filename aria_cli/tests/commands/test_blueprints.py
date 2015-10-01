@@ -14,7 +14,7 @@
 #    * limitations under the License.
 
 """
-Tests all commands that start with 'cfy blueprints'
+Tests all commands that start with 'aria blueprints'
 """
 
 from aria_cli.tests import cli_runner
@@ -29,12 +29,12 @@ class BlueprintsTest(CliCommandTest):
         self._create_cosmo_wd_settings()
 
     def test_blueprint_validate(self):
-        cli_runner.run_cli('cfy blueprints validate '
+        cli_runner.run_cli('aria blueprints validate '
                            '-p {0}/helloworld/blueprint.yaml'
                            .format(BLUEPRINTS_DIR))
 
     def test_validate_bad_blueprint(self):
-        self._assert_ex('cfy blueprints validate '
+        self._assert_ex('aria blueprints validate '
                         '-p {0}/bad_blueprint/blueprint.yaml'
                         .format(BLUEPRINTS_DIR),
                         'Failed to validate blueprint')

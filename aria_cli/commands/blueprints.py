@@ -14,7 +14,7 @@
 #    * limitations under the License.
 
 """
-Handles all commands that start with 'cfy blueprints'
+Handles all commands that start with 'aria blueprints'
 """
 
 from aria_cli import utils

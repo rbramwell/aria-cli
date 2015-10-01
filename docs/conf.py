@@ -1,7 +1,7 @@
 # flake8: NOQA
 # -*- coding: utf-8 -*-
 #
-# packman documentation build configuration file, created by
+# aria documentation build configuration file, created by
 # sphinx-quickstart on Thu Apr  3 23:59:36 2014.
 #
 # This file is execfile()d with the current directory set to its
@@ -23,10 +23,10 @@ if not on_rtd:  # only import and set the theme if we're building docs locally
     html_theme_path = [sphinx_rtd_theme.get_html_theme_path()]
 
 # General information about the project.
-project = 'cloudify'
+project = 'aria'
 package = 'aria_cli'
 author = 'Gigaspaces'
-copyright = '2014, Gigaspaces'
+copyright = '2015, Gigaspaces'
 
 # If extensions (or modules to document with autodoc) are in another directory,
 # add these directories to sys.path here. If the directory is relative to the
@@ -74,7 +74,7 @@ import pkg_resources
 try:
     release = pkg_resources.get_distribution(project).version
 except pkg_resources.DistributionNotFound:
-    print 'To build the documentation, The distribution information of packm'
+    print 'To build the documentation, The distribution information of aria'
     print 'Has to be available.  Either install the package into your'
     print 'development environment or run "setup.py develop" to setup the'
     print 'metadata.  A virtualenv is recommended!'

@@ -14,7 +14,7 @@
 #    * limitations under the License.
 
 """
-Tests all commands that start with 'cfy blueprints'
+Tests all commands that start with 'aria blueprints'
 """
 
 import os
@@ -44,29 +44,29 @@ class LocalTest(CliCommandTest):
 
     def test_local_init_missing_blueprint_path(self):
         cli_runner.run_cli_expect_system_exit_code(
-            'cfy local init', 2)
+            'aria local init', 2)
 
     def test_local_init_invalid_blueprint_path(self):
         self._assert_ex(
-            'cfy local init -p idonotexist.yaml',
+            'aria local init -p idonotexist.yaml',
             'No such file or directory')
 
     def test_local_init(self):
         self._local_init()
-        output = cli_runner.run_cli('cfy local outputs')
+        output = cli_runner.run_cli('aria local outputs')
         self.assertIn('"param": null', output)
         self.assertIn('"custom_param": null', output)
         self.assertIn('"input1": "default_input1"', output)
 
     def test_local_init_with_inputs(self):
         self._local_init(inputs={'input1': 'new_input1'})
-        output = cli_runner.run_cli('cfy local outputs')
+        output = cli_runner.run_cli('aria local outputs')
         self.assertIn('"input1": "new_input1"', output)
 
     def test_local_execute(self):
         self._local_init()
         self._local_execute()
-        output = cli_runner.run_cli('cfy local outputs')
+        output = cli_runner.run_cli('aria local outputs')
         self.assertIn('"param": "default_param"', output)
 
     def test_local_init_install_plugins(self):
@@ -76,7 +76,7 @@ class LocalTest(CliCommandTest):
                     'blueprint_with_plugins')
 
         self.assert_method_called(
-            cli_command='cfy local init --install-plugins -p {0}'
+            cli_command='aria local init --install-plugins -p {0}'
                         .format(blueprint_path),
             module=common,
             function_name='install_blueprint_plugins',
@@ -87,7 +87,7 @@ class LocalTest(CliCommandTest):
         blueprint = 'blueprint_without_plugins'
         blueprint_path = '{0}/local/{1}.yaml'.format(BLUEPRINTS_DIR,
                                                      blueprint)
-        cli_runner.run_cli('cfy local init --install-plugins -p {0}'
+        cli_runner.run_cli('aria local init --install-plugins -p {0}'
                            .format(blueprint_path))
 
     def test_local_init_missing_plugin(self):
@@ -97,9 +97,9 @@ class LocalTest(CliCommandTest):
                                                      blueprint)
 
         expected_possible_solutions = [
-            "Run 'cfy local init --install-plugins -p {0}'"
+            "Run 'aria local init --install-plugins -p {0}'"
             .format(blueprint_path),
-            "Run 'cfy local install-plugins -p {0}'"
+            "Run 'aria local install-plugins -p {0}'"
             .format(blueprint_path)
         ]
         try:
@@ -113,7 +113,7 @@ class LocalTest(CliCommandTest):
     def test_local_execute_with_params(self):
         self._local_init()
         self._local_execute(parameters={'param': 'new_param'})
-        output = cli_runner.run_cli('cfy local outputs')
+        output = cli_runner.run_cli('aria local outputs')
         self.assertIn('"param": "new_param"', output)
 
     def test_local_execute_with_params_allow_custom_false(self):
@@ -125,46 +125,46 @@ class LocalTest(CliCommandTest):
         self._local_init()
         self._local_execute(parameters={'custom_param': 'custom_param_value'},
                             allow_custom=True)
-        output = cli_runner.run_cli('cfy local outputs')
+        output = cli_runner.run_cli('aria local outputs')
         self.assertIn('"custom_param": "custom_param_value"', output)
 
     def test_local_instances(self):
         self._local_init()
         self._local_execute()
-        output = cli_runner.run_cli('cfy local instances')
+        output = cli_runner.run_cli('aria local instances')
         self.assertIn('"node_id": "node"', output)
 
     def test_local_instances_with_existing_node_id(self):
         self._local_init()
         self._local_execute()
-        output = cli_runner.run_cli('cfy local instances --node-id node')
+        output = cli_runner.run_cli('aria local instances --node-id node')
         self.assertIn('"node_id": "node"', output)
 
     def test_local_instances_with_non_existing_node_id(self):
         self._local_init()
         self._local_execute()
-        self._assert_ex('cfy local instances --node-id no_node',
+        self._assert_ex('aria local instances --node-id no_node',
                         'No node with id: no_node')
 
     def test_execute_with_no_init(self):
-        self._assert_ex('cfy local execute -w run_test_op_on_nodes',
+        self._assert_ex('aria local execute -w run_test_op_on_nodes',
                         'has not been initialized',
                         possible_solutions=[
-                            "Run 'cfy local init' in this directory"
+                            "Run 'aria local init' in this directory"
                         ])
 
     def test_outputs_with_no_init(self):
-        self._assert_ex('cfy local outputs',
+        self._assert_ex('aria local outputs',
                         'has not been initialized',
                         possible_solutions=[
-                            "Run 'cfy local init' in this directory"
+                            "Run 'aria local init' in this directory"
                         ])
 
     def test_instances_with_no_init(self):
-        self._assert_ex('cfy local instances',
+        self._assert_ex('aria local instances',
                         'has not been initialized',
                         possible_solutions=[
-                            "Run 'cfy local init' in this directory"
+                            "Run 'aria local init' in this directory"
                         ])
 
     def test_create_requirements(self):
@@ -181,7 +181,7 @@ class LocalTest(CliCommandTest):
         requirements_file_path = os.path.join(TEST_WORK_DIR,
                                               'requirements.txt')
 
-        cli_runner.run_cli('cfy local create-requirements -p '
+        cli_runner.run_cli('aria local create-requirements -p '
                            '{0}/local/blueprint_with_plugins.yaml -o {1}'
                            .format(BLUEPRINTS_DIR, requirements_file_path))
 
@@ -196,7 +196,7 @@ class LocalTest(CliCommandTest):
         with open(file_path, 'w') as f:
             f.write('')
         self._assert_ex(
-            cli_cmd='cfy local create-requirements -p {0} -o {1}'
+            cli_cmd='aria local create-requirements -p {0} -o {1}'
                     .format(blueprint_path, file_path),
             err_str_segment='output path already exists : '
                             '{0}'.format(file_path)
@@ -214,7 +214,7 @@ class LocalTest(CliCommandTest):
                 'local_plugin'),
             'http://localhost/host_plugin.zip'}
         output = cli_runner.run_cli(
-            'cfy local create-requirements -p '
+            'aria local create-requirements -p '
             '{0}/local/blueprint_with_plugins.yaml'
             .format(BLUEPRINTS_DIR))
         for requirement in expected_requirements:
@@ -224,7 +224,7 @@ class LocalTest(CliCommandTest):
         blueprint_path = '{0}/local/install-agent-blueprint.yaml' \
             .format(BLUEPRINTS_DIR)
         try:
-            cli_runner.run_cli('cfy local init -p {0}'.format(blueprint_path))
+            cli_runner.run_cli('aria local init -p {0}'.format(blueprint_path))
             self.fail('ValueError was expected')
         except ValueError as e:
             self.assertIn("'install_agent': true is not supported "
@@ -239,7 +239,7 @@ class LocalTest(CliCommandTest):
         blueprint_path = '{0}/local/blueprint_with_plugins.yaml'\
             .format(BLUEPRINTS_DIR)
         try:
-            cli_runner.run_cli('cfy local install-plugins -p {0}'
+            cli_runner.run_cli('aria local install-plugins -p {0}'
                                .format(blueprint_path))
         except CommandExecutionException as e:
             # Expected pip install to start
@@ -249,7 +249,7 @@ class LocalTest(CliCommandTest):
     def test_install_plugins_missing_windows_agent_installer(self):
         blueprint_path = '{0}/local/windows_installers_blueprint.yaml'\
             .format(BLUEPRINTS_DIR)
-        cli_runner.run_cli('cfy local init -p {0}'.format(blueprint_path))
+        cli_runner.run_cli('aria local init -p {0}'.format(blueprint_path))
 
     def _local_init(self,
                     inputs=None,
@@ -259,7 +259,7 @@ class LocalTest(CliCommandTest):
         blueprint_path = '{0}/local/{1}.yaml'.format(BLUEPRINTS_DIR,
                                                      blueprint)
         flags = '--install-plugins' if install_plugins else ''
-        command = 'cfy local init {0} -p {1}'.format(flags,
+        command = 'aria local init {0} -p {1}'.format(flags,
                                                      blueprint_path)
         if inputs:
             inputs_path = os.path.join(TEST_WORK_DIR,
@@ -277,7 +277,7 @@ class LocalTest(CliCommandTest):
                                            'temp_parameters.json')
             with open(parameters_path, 'w') as f:
                 f.write(json.dumps(parameters))
-            command = 'cfy local execute -w {0} -p {1}'\
+            command = 'aria local execute -w {0} -p {1}'\
                       .format(workflow_name,
                               parameters_path)
             if allow_custom is True:
@@ -288,7 +288,7 @@ class LocalTest(CliCommandTest):
             else:
                 cli_runner.run_cli(command)
         else:
-            cli_runner.run_cli('cfy local execute -w {0}'
+            cli_runner.run_cli('aria local execute -w {0}'
                                .format(workflow_name))
 
 
