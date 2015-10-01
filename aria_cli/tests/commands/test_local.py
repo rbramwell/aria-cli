@@ -260,7 +260,7 @@ class LocalTest(CliCommandTest):
                                                      blueprint)
         flags = '--install-plugins' if install_plugins else ''
         command = 'aria local init {0} -p {1}'.format(flags,
-                                                     blueprint_path)
+                                                      blueprint_path)
         if inputs:
             inputs_path = os.path.join(TEST_WORK_DIR,
                                        'temp_inputs.json')
