@@ -13,9 +13,9 @@ script:
 deploy:
   - provider: pypi
     server: https://pypi.python.org/pypi
-    on:
-      branch: pypi-release
-      condition: $TOX_ENV = py27
+#    on:
+#      branch: pypi-release
+#      condition: $TOX_ENV = py27
     user: cosmo-maint
     password:
       secure: "LcBt4ocFlLp0wl2PNYgqvlViMcC8K727Vz7zvHkpvdK1risMPD7ZV0BX6JJR9cdmno4oMr8uyJvXF2FRtNjPq9CNboAiEV7tGuzcE3Hjeeg/+FXmm+Ow8UASuEsMkkNrIVYV6JKs8O2QeK/PIcXNzb8I3Dkoxqf5uXR5QE22lDM="
