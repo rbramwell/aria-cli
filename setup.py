@@ -18,7 +18,7 @@ from setuptools import setup
 
 setup(
     name='aria',
-    version='0.1',
+    version='0.0.1',
     author='Gigaspaces',
     author_email='cosmo-admin@gigaspaces.com',
     packages=['aria_cli',
