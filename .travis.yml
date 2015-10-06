@@ -14,7 +14,7 @@ deploy:
   - provider: pypi
     server: https://pypi.python.org/pypi
     on:
-#      branch: pypi-release
+      tags: true
       condition: $TOX_ENV = py27
     user: cosmo-maint
     password:
@@ -22,7 +22,7 @@ deploy:
   - provider: pypi
     server: https://testpypi.python.org/pypi
     on:
-#      branch: pypi-test
+      tags: true
       condition: $TOX_ENV = py27
     user: cosmo-maint
     password:
