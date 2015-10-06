@@ -1,4 +1,4 @@
-########
+# #######
 # Copyright (c) 2014 GigaSpaces Technologies Ltd. All rights reserved
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -222,14 +222,6 @@ def dump_cloudify_working_dir_settings(cosmo_wd_settings=None, update=False):
         f.write(yaml.dump(cosmo_wd_settings))
 
 
-def is_use_colors():
-    if not is_initialized():
-        return False
-
-    config = CloudifyConfig()
-    return config.colors
-
-
 def get_import_resolver():
     if not is_initialized():
         return None
@@ -282,7 +274,7 @@ def get_auth_header(username, password):
         credentials = '{0}:{1}'.format(username, password)
         header = {
             constants.CLOUDIFY_AUTHENTICATION_HEADER:
-                constants.BASIC_AUTH_PREFIX + ' ' + base64_encode(credentials)}
+            constants.BASIC_AUTH_PREFIX + ' ' + base64_encode(credentials)}
 
     return header
 
@@ -472,9 +464,7 @@ def delete_cloudify_working_dir_settings():
 
 
 class CloudifyConfig(object):
-
     class Logging(object):
-
         def __init__(self, logging):
             self._logging = logging or {}
 
@@ -489,10 +479,6 @@ class CloudifyConfig(object):
     def __init__(self):
         with open(get_configuration_path()) as f:
             self._config = yaml.safe_load(f.read())
-
-    @property
-    def colors(self):
-        return self._config.get('colors', False)
 
     @property
     def logging(self):

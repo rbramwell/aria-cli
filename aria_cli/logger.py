@@ -21,12 +21,10 @@ import os
 import copy
 import warnings
 
-import colorama
 from requests.packages.urllib3.exceptions import InsecurePlatformWarning
 
 from cloudify import logs
 from aria_cli.config import logger_config
-from aria_cli.colorful_event import ColorfulEvent
 
 
 _lgr = None
@@ -59,14 +57,6 @@ def configure_loggers():
 
     global _lgr
     _lgr = logging.getLogger('cloudify.cli.main')
-
-    # configuring events/logs loggers
-    # (this will also affect local workflow loggers, which don't use
-    # the get_events_logger method of this module)
-    if utils.is_use_colors():
-        logs.EVENT_CLASS = ColorfulEvent
-        # refactor this elsewhere if colorama is further used in CLI
-        colorama.init(autoreset=True)
 
 
 def _configure_defaults():

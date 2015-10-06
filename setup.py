@@ -17,8 +17,8 @@ from setuptools import setup
 
 
 setup(
-    name='aria',
-    version='0.0.1',
+    name='aria-tosca',
+    version='0.1',
     author='Gigaspaces',
     author_email='cosmo-admin@gigaspaces.com',
     packages=['aria_cli',
@@ -39,15 +39,14 @@ setup(
         ]
     },
     install_requires=[
-        'cloudify-plugins-common==3.3a5',
-        'cloudify-rest-client==3.3a5',
-        'cloudify-dsl-parser==3.3a5',
-        'cloudify-script-plugin==1.3a5',
+        'cloudify-plugins-common==3.3a4',
+        'cloudify-rest-client==3.3a4',
+        'cloudify-dsl-parser==3.3a4',
+        'cloudify-script-plugin==1.3a4',
         'pyyaml==3.10',
         'argcomplete==0.7.1',
         'fabric==1.8.3',
         'PrettyTable>=0.7,<0.8',
-        'colorama==0.3.3',
         'jinja2==2.7.2',
         'itsdangerous==0.24'
     ]
