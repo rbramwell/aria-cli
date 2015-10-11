@@ -119,7 +119,7 @@ class CliInvocationTest(unittest.TestCase):
 
     @classmethod
     def tearDownClass(cls):
-        commands.blueprints.validate = cls.original_blueprints_validate
+        commands.local.validate = cls.original_blueprints_validate
         commands.local.execute = cls.original_local_execute
         commands.local.init = cls.original_local_init
         commands.local.outputs = cls.original_local_outputs
@@ -135,8 +135,8 @@ class CliInvocationTest(unittest.TestCase):
 
         # blueprint commands
         cls.original_blueprints_validate = commands.blueprints.validate
-        commands.blueprints.validate = create_autospec(
-            commands.blueprints.validate, return_value=None
+        commands.local.validate = create_autospec(
+            commands.local.validate, return_value=None
         )
 
         # local commands

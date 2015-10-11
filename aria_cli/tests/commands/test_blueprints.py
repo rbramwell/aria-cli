@@ -29,12 +29,12 @@ class BlueprintsTest(CliCommandTest):
         self._create_cosmo_wd_settings()
 
     def test_blueprint_validate(self):
-        cli_runner.run_cli('aria blueprints validate '
+        cli_runner.run_cli('aria validate '
                            '-p {0}/helloworld/blueprint.yaml'
                            .format(BLUEPRINTS_DIR))
 
     def test_validate_bad_blueprint(self):
-        self._assert_ex('aria blueprints validate '
+        self._assert_ex('aria validate '
                         '-p {0}/bad_blueprint/blueprint.yaml'
                         .format(BLUEPRINTS_DIR),
                         'Failed to validate blueprint')

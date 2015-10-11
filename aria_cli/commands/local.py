@@ -14,7 +14,7 @@
 #    * limitations under the License.
 
 """
-Handles 'aria local'
+Handles 'aria commands'
 """
 
 import json
@@ -27,10 +27,29 @@ from aria_cli import common
 from aria_cli import utils
 from aria_cli.logger import get_logger
 from aria_cli.commands import init as aria_init
-
+from aria_cli import messages
+from aria_cli.exceptions import CloudifyCliError
+from dsl_parser.parser import parse_from_path
+from dsl_parser.exceptions import DSLParsingException
 
 _NAME = 'local'
 _STORAGE_DIR_NAME = 'local-storage'
+SUPPORTED_ARCHIVE_TYPES = ['zip', 'tar', 'tar.gz', 'tar.bz2']
+
+
+def validate(blueprint_path):
+    logger = get_logger()
+
+    logger.info(
+        messages.VALIDATING_BLUEPRINT.format(blueprint_path.name))
+    try:
+        resolver = utils.get_import_resolver()
+        parse_from_path(dsl_file_path=blueprint_path.name, resolver=resolver)
+    except DSLParsingException as ex:
+        msg = (messages.VALIDATING_BLUEPRINT_FAILED
+               .format(blueprint_path.name, str(ex)))
+        raise CloudifyCliError(msg)
+    logger.info(messages.VALIDATING_BLUEPRINT_SUCCEEDED)
 
 
 def init(blueprint_path,
@@ -58,16 +77,16 @@ def init(blueprint_path,
         # TODO - all of our exceptions. so that we
         # TODO - easily identify them here
         e.possible_solutions = [
-            "Run 'aria local init --install-plugins -p {0}'"
+            "Run 'aria init --install-plugins -p {0}'"
             .format(blueprint_path),
-            "Run 'aria local install-plugins -p {0}'"
+            "Run 'aria install-plugins -p {0}'"
             .format(blueprint_path)
         ]
         raise
 
     get_logger().info("Initiated {0}\nIf you make changes to the "
                       "blueprint, "
-                      "run 'aria local init -p {0}' "
+                      "run 'aria init -p {0}' "
                       "again to apply them"
                       .format(blueprint_path))
 
@@ -163,7 +182,7 @@ def _load_env():
         # suggest solution.
 
         error.possible_solutions = [
-            "Run 'aria local init' in this directory"
+            "Run 'aria init' in this directory"
         ]
         raise error
     return local.load_env(name=_NAME,

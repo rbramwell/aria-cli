@@ -25,5 +25,4 @@ from aria_cli.commands.version import VersionAction as version
 
 
 # import cfy sub commands
-from aria_cli.commands import blueprints
 from aria_cli.commands import local
