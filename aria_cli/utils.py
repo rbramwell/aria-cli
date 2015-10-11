@@ -25,7 +25,6 @@ from contextlib import contextmanager
 import yaml
 import pkg_resources
 from jinja2.environment import Template
-from prettytable import PrettyTable
 from itsdangerous import base64_encode
 
 from cloudify_rest_client import CloudifyClient
@@ -33,7 +32,6 @@ from cloudify_rest_client import CloudifyClient
 import aria_cli
 from aria_cli import constants
 from aria_cli.exceptions import CloudifyCliError
-from aria_cli.logger import get_logger
 from dsl_parser import utils as dsl_parser_utils
 from dsl_parser.constants import IMPORT_RESOLVER_KEY
 
@@ -41,14 +39,6 @@ DEFAULT_LOG_FILE = os.path.expanduser(
     '{0}/cloudify-{1}/cloudify-cli.log'
     .format(tempfile.gettempdir(),
             getpass.getuser()))
-
-
-def get_management_user():
-    cosmo_wd_settings = load_cloudify_working_dir_settings()
-    if cosmo_wd_settings.get_management_user():
-        return cosmo_wd_settings.get_management_user()
-    msg = 'Management User is not set in working directory settings'
-    raise CloudifyCliError(msg)
 
 
 def dump_to_file(collection, file_path):
@@ -70,14 +60,6 @@ def load_cloudify_working_dir_settings(suppress_error=False):
         if suppress_error:
             return None
         raise
-
-
-def get_management_key():
-    cosmo_wd_settings = load_cloudify_working_dir_settings()
-    if cosmo_wd_settings.get_management_key():
-        return cosmo_wd_settings.get_management_key()
-    msg = 'Management Key is not set in working directory settings'
-    raise CloudifyCliError(msg)
 
 
 def raise_uninitialized():
@@ -320,10 +302,6 @@ def get_ssl_trust_all():
     return False
 
 
-def print_table(title, tb):
-    get_logger().info('{0}{1}{0}{2}{0}'.format(os.linesep, title, tb))
-
-
 def decode_list(data):
     rv = []
     for item in data:
@@ -352,15 +330,6 @@ def decode_dict(data):
     return rv
 
 
-def print_workflows(workflows, deployment):
-    pt = table(['blueprint_id', 'deployment_id',
-                'name', 'created_at'],
-               data=workflows,
-               defaults={'blueprint_id': deployment.blueprint_id,
-                         'deployment_id': deployment.id})
-    print_table('Workflows:', pt)
-
-
 def get_version():
     version_data = get_version_data()
     return version_data['version']
@@ -369,38 +338,6 @@ def get_version():
 def get_version_data():
     data = pkgutil.get_data('aria_cli', 'VERSION')
     return json.loads(data)
-
-
-def table(cols, data, defaults=None):
-    """
-    Return a new PrettyTable instance representing the list.
-
-    Arguments:
-
-        cols - An iterable of strings that specify what
-               are the columns of the table.
-
-               for example: ['id','name']
-
-        data - An iterable of dictionaries, each dictionary must
-               have key's corresponding to the cols items.
-
-               for example: [{'id':'123', 'name':'Pete']
-
-        defaults - A dictionary specifying default values for
-                   key's that don't exist in the data itself.
-
-                   for example: {'deploymentId':'123'} will set the
-                   deploymentId value for all rows to '123'.
-
-    """
-
-    pt = PrettyTable([col for col in cols])
-
-    for d in data:
-        pt.add_row(map(lambda c: d[c] if c in d else defaults[c], cols))
-
-    return pt
 
 
 class CloudifyWorkingDirectorySettings(yaml.YAMLObject):
