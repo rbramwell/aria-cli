@@ -39,10 +39,10 @@ setup(
         ]
     },
     install_requires=[
-        'cloudify-plugins-common==3.3a4',
+        'aria-plugins-common==0.1',
         'aria-rest-client==0.1',
-        'cloudify-dsl-parser==3.3a4',
-        'cloudify-script-plugin==1.3a4',
+        'aria-dsl-parser==0.1',
+        'aria-script-plugin==0.1',
         'pyyaml==3.10',
         'argcomplete==0.7.1',
         'fabric==1.8.3',
