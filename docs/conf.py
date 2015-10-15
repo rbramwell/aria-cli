@@ -23,7 +23,7 @@ if not on_rtd:  # only import and set the theme if we're building docs locally
     html_theme_path = [sphinx_rtd_theme.get_html_theme_path()]
 
 # General information about the project.
-project = 'aria'
+project = 'aria-tosca'
 package = 'aria_cli'
 author = 'Gigaspaces'
 copyright = '2015, Gigaspaces'
@@ -43,14 +43,14 @@ sys.path.insert(0, os.path.abspath('../..'))
 # Add any Sphinx extension module names here, as strings. They can be
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
-extensions = [
-    'sphinx.ext.autodoc',
-    'sphinx.ext.doctest',
-    'sphinx.ext.coverage',
-    'sphinx.ext.ifconfig',
-    'sphinx.ext.viewcode',
-    'sphinxarg.ext',
-]
+# extensions = [
+#     'sphinx.ext.autodoc',
+#     'sphinx.ext.doctest',
+#     'sphinx.ext.coverage',
+#     'sphinx.ext.ifconfig',
+#     'sphinx.ext.viewcode',
+#     'sphinxarg.ext',
+# ]
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
