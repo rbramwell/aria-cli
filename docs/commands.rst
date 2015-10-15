@@ -12,7 +12,7 @@ Inputs and Parameters
  * A string formatted as "key1=value1;key2=value2"
  
 aria
----
+----
 .. argparse::
    :module: aria_cli.cli
    :func: register_commands
