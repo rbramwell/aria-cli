@@ -17,4 +17,3 @@ aria
    :module: aria_cli.cli
    :func: register_commands
    :prog: aria
-   :path: local
