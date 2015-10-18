@@ -18,7 +18,7 @@ from setuptools import setup
 
 setup(
     name='aria-tosca',
-    version='0.1',
+    version='0.4',
     author='Gigaspaces',
     author_email='cosmo-admin@gigaspaces.com',
     packages=['aria_cli',
@@ -41,7 +41,7 @@ setup(
     install_requires=[
         'aria-plugins-common==0.1',
         'aria-rest-client==0.1',
-        'aria-dsl-parser==0.1',
+        'aria-dsl-parser==0.2',
         'aria-script-plugin==0.1',
         'pyyaml==3.10',
         'argcomplete==0.7.1',
