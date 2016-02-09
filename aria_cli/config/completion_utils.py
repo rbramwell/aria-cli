@@ -1,5 +1,5 @@
 ########
-# Copyright (c) 2014 GigaSpaces Technologies Ltd. All rights reserved
+# Copyright (c) 2016 GigaSpaces Technologies Ltd. All rights reserved
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -39,8 +39,6 @@ def objects_args_completer_maker(objects_type, **kw):
 
 
 def workflow_id_completer(prefix, parsed_args, **kwargs):
-    # TODO: refactor this into '_objects_args_completer_maker' method once
-    #       workflows get their own module in rest-client
     if not parsed_args.deployment_id:
         return []
 

@@ -29,8 +29,3 @@ deploy:
     user: cosmo-maint
     password:
       secure: "pbAA+13BgWIeD5D+elnynLUbZ02qFvF0AKAbZFX7jNCRkpLqcl8fMPFCwA150KTh1C0MabUQlau5Z708tjYO9zWLRo+w/6KupQ2rj6u+sAdnyYu+p3BXXlQ4+GDFWxmV/vsqNdJaKJC4DGnACDNwfXaKyus9wJ4YGZ7AYMuDegRtIF0P5nsRC7YFOdBUBuov5RIuaPGpFK8p3JHajTaYn2fBC7Ydhi40589j/ljocIVX+eWGSQA+Tqi21G7Q/B8i0d4DxBaeb/IlzJ/Rdhikhc68WRfVfqAL9QrBCJiMcH0Xutev3JSyXdl0R44PYa5HiYiHodgsAKzupHjdSwkqg/pUJb9a+IHiikrKuXc2vCiNsUsI1RW5RhjoGnO0c6grJW9u9Vj3KOANQ4irOcHiYiNCbEGI2aSj5xG+g9OQOqJcpfczURP3Fo/1O7sxS8bOICY6XQrjmxu86N8gAiyRTIqPBFonzEAcWszSQtE3kn/Fo/T1vM44X2gSKFOP9MVEc9rxihUp2VbCkjTzgE8mvCkdJXap6YwvYTqRilZs5GDdedeV+HDt7jIYtxv+Cao0tGJxZ/bewnBaQ3ad91LMbdB8jwD5IVUA6NvgX4huv9imE36SgWIV/ufgsGMMCN9sHZTViuqucbnswjRsrsdFBRC2IW1B1fm7Iwr3JCue50s="
-##after_deploy:
-#  - git clone https://github.com/cloudify-cosmo/travis-utils.git
-#  - python travis-utils/validate_pypi.py -v -b $TRAVIS_BRANCH || exit 1
-#notifications:
-#  flowdock: a73d66c41c6e4406e1c47e042dfd2b59

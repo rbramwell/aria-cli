@@ -120,6 +120,8 @@ class CliCommandTest(unittest.TestCase):
             _assert()
         except ImportError as ex:
             _assert()
+        except Exception as ex:
+            _assert()
 
     def assert_method_called(self,
                              cli_command,

@@ -1,5 +1,5 @@
 ########
-# Copyright (c) 2014 GigaSpaces Technologies Ltd. All rights reserved
+# Copyright (c) 2016 GigaSpaces Technologies Ltd. All rights reserved
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -26,30 +26,24 @@ from aria_cli import exceptions
 from aria_cli import common
 from aria_cli import utils
 from aria_cli.logger import get_logger
-from aria_cli.commands import init as aria_init
-from aria_cli import messages
-from aria_cli.exceptions import CloudifyCliError
-from dsl_parser.parser import parse_from_path
-from dsl_parser.exceptions import DSLParsingException
+from aria_cli.commands import init as aria
+from dsl_parser import exceptions as aria_dsl_exceptions
+from dsl_parser import parser as aria_dsl_parser
 
 _NAME = 'local'
 _STORAGE_DIR_NAME = 'local-storage'
-SUPPORTED_ARCHIVE_TYPES = ['zip', 'tar', 'tar.gz', 'tar.bz2']
 
 
-def validate(blueprint_path):
-    logger = get_logger()
-
-    logger.info(
-        messages.VALIDATING_BLUEPRINT.format(blueprint_path.name))
+def validate(blueprint_path=None):
     try:
-        resolver = utils.get_import_resolver()
-        parse_from_path(dsl_file_path=blueprint_path.name, resolver=resolver)
-    except DSLParsingException as ex:
-        msg = (messages.VALIDATING_BLUEPRINT_FAILED
-               .format(blueprint_path.name, str(ex)))
-        raise CloudifyCliError(msg)
-    logger.info(messages.VALIDATING_BLUEPRINT_SUCCEEDED)
+        return aria_dsl_parser.parse_from_path(
+            str(blueprint_path)
+            if not isinstance(blueprint_path, file)
+            else blueprint_path.name)
+    except aria_dsl_exceptions.DSLParsingException as e:
+        logger = get_logger()
+        logger.error(str(e))
+        raise Exception("Failed to validate blueprint. %s", str(e))
 
 
 def init(blueprint_path,
@@ -59,7 +53,7 @@ def init(blueprint_path,
         shutil.rmtree(_storage_dir())
 
     if not utils.is_initialized():
-        aria_init.init(reset_config=False, skip_logging=True)
+        aria.init(reset_config=False, skip_logging=True)
     try:
         common.initialize_blueprint(
             blueprint_path=blueprint_path,
@@ -86,7 +80,7 @@ def init(blueprint_path,
 
     get_logger().info("Initiated {0}\nIf you make changes to the "
                       "blueprint, "
-                      "run 'aria init -p {0}' "
+                      "Run 'aria init -p {0}' "
                       "again to apply them"
                       .format(blueprint_path))
 

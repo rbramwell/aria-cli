@@ -153,20 +153,6 @@ class LocalTest(CliCommandTest):
                             "Run 'aria init' in this directory"
                         ])
 
-    def test_outputs_with_no_init(self):
-        self._assert_ex('aria  outputs',
-                        'has not been initialized',
-                        possible_solutions=[
-                            "Run 'aria init' in this directory"
-                        ])
-
-    def test_instances_with_no_init(self):
-        self._assert_ex('aria instances',
-                        'has not been initialized',
-                        possible_solutions=[
-                            "Run 'aria init' in this directory"
-                        ])
-
     def test_create_requirements(self):
 
         from aria_cli.tests.resources.blueprints import local
@@ -236,19 +222,19 @@ class LocalTest(CliCommandTest):
 
     def test_install_plugins(self):
 
-        blueprint_path = '{0}/local/blueprint_with_plugins.yaml'\
-            .format(BLUEPRINTS_DIR)
+        blueprint_path = ('{0}/local/blueprint_with_plugins.yaml'.
+                          format(BLUEPRINTS_DIR))
         try:
             cli_runner.run_cli('aria install-plugins -p {0}'
                                .format(blueprint_path))
         except CommandExecutionException as e:
             # Expected pip install to start
-            self.assertIn('pip install -r /tmp/requirements_',
+            self.assertIn('pip install -r ',
                           e.message)
 
     def test_install_plugins_missing_windows_agent_installer(self):
-        blueprint_path = '{0}/local/windows_installers_blueprint.yaml'\
-            .format(BLUEPRINTS_DIR)
+        blueprint_path = ('{0}/local/windows_installers_blueprint.yaml'.
+                          format(BLUEPRINTS_DIR))
         cli_runner.run_cli('aria init -p {0}'.format(blueprint_path))
 
     def _local_init(self,
