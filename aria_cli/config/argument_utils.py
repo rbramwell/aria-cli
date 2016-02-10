@@ -19,7 +19,8 @@ import copy
 
 def remove_completer(argument):
     argument_copy = copy.copy(argument)
-    del argument_copy['completer']
+    if argument_copy.get('completer'):
+        del argument_copy['completer']
     return argument_copy
 
 

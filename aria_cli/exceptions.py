@@ -18,19 +18,15 @@ Cloudify Cli Exceptions
 """
 
 
-class CloudifyCliError(Exception):
+class AriaCliError(Exception):
     pass
 
 
-class CloudifyBootstrapError(Exception):
+class AriaValidationError(Exception):
     pass
 
 
-class CloudifyValidationError(Exception):
-    pass
-
-
-class SuppressedCloudifyCliError(Exception):
+class SuppressedAriaCliError(Exception):
     pass
 
 

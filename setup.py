@@ -35,18 +35,14 @@ setup(
     entry_points={
         'console_scripts': [
             'aria = aria_cli.cli:main',
-            'activate_cfy_bash_completion = aria_cli.activate_bash_completion:main'  # NOQA
+            'activate_aria_bash_completion = aria_cli.activate_bash_completion:main'  # NOQA
         ]
     },
     install_requires=[
         'aria-plugins-common==0.1',
-        'aria-rest-client==0.1',
         'aria-dsl-parser==0.2',
-        'aria-script-plugin==0.1',
         'pyyaml==3.10',
         'argcomplete==0.7.1',
-        'fabric==1.8.3',
         'jinja2==2.7.2',
-        'itsdangerous==0.24'
     ]
 )

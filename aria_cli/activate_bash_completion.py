@@ -13,12 +13,14 @@
 #    * See the License for the specific language governing permissions and
 #    * limitations under the License.
 
+import sys
 import platform
 import subprocess
+
 from getpass import getuser
 from sys import executable
-from os.path import expanduser, dirname
-import sys
+from os import path
+
 
 __author__ = 'nir'
 
@@ -26,16 +28,16 @@ __author__ = 'nir'
 def main():
     try:
         distro = platform.dist()[0]
-        print 'distribution identified: {0}'.format(distro)
-    except:
+        print('distribution identified: {0}'.format(distro))
+    except Exception:
         sys.exit('failed to retrieve os distribution')
 
     if distro in ('Ubuntu', 'debian'):
         user = getuser()
-        home = expanduser("~")
-        intd = dirname(executable)
+        home = path.expanduser("~")
+        intd = path.dirname(executable)
 
-        print 'adding bash completion for user {0}, in {1}'.format(user, intd)
+        print('adding bash completion for user {0}, in {1}'.format(user, intd))
         cmd_check_if_registered = ('grep "{0}/register-python-argcomplete '
                                    'cfy" {1}/.bashrc')
         x = subprocess.Popen(cmd_check_if_registered.format(intd, home),
@@ -43,19 +45,21 @@ def main():
                              stdout=subprocess.PIPE)
         output = x.communicate()[0]
         if output == '':
-            print 'adding autocomplete to ~/.bashrc'
-            cmd_register_to_bash = ('''echo 'eval "$({0}/register-python-argcomplete cfy)"' >> {1}/.bashrc''')  # NOQA
+            print('adding autocomplete to ~/.bashrc')
+            cmd_register_to_bash = (
+                '''echo 'eval "$({0}/register-python-argcomplete cfy)"' >> {1}/.bashrc''')  # NOQA
             subprocess.Popen(cmd_register_to_bash.format(intd, home),
                              shell=True,
                              stdout=subprocess.PIPE)
             try:
-                print 'attempting to source bashrc'
+                print('attempting to source bashrc')
                 execfile('{0}/.bashrc'.format(home))
-            except:
-                print 'could not source bashrc'
-            print 'if cfy autocomplete doesn\'t work, reload your shell or run ". ~/.bashrc'  # NOQA
+            except Exception:
+                print('could not source bashrc')
+            print("if cfy autocomplete doesn't work, "
+                  "reload your shell or run . ~/.bashrc")
         else:
-            print 'autocomplete already installed'
+            print('autocomplete already installed')
     elif platform.dist()[0] == 'Windows':
         return
     elif platform.dist()[0] == 'CentOS':

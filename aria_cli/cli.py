@@ -21,10 +21,7 @@ import traceback
 import argcomplete
 import logging
 
-from cloudify_rest_client.exceptions import CloudifyClientError
-
-from aria_cli.exceptions import SuppressedCloudifyCliError
-from aria_cli.exceptions import CloudifyBootstrapError
+from aria_cli import exceptions
 
 
 verbose_output = False
@@ -165,10 +162,9 @@ def set_debug():
 
     """
 
-    from cloudify_cli.logger import all_loggers
+    from aria_cli.logger import all_loggers
     for logger_name in all_loggers():
-        logging.getLogger(logger_name)\
-            .setLevel(logging.DEBUG)
+        logging.getLogger(logger_name).setLevel(logging.DEBUG)
 
 
 def get_global_verbosity():
@@ -207,14 +203,7 @@ def _set_cli_except_hook():
         prefix = None
         server_traceback = None
         output_message = True
-        if issubclass(tpe, CloudifyClientError):
-            server_traceback = value.server_traceback
-            # this means we made a server call and it failed.
-            # we should include this information in the error
-            prefix = 'An error occurred on the server'
-        if issubclass(tpe, SuppressedCloudifyCliError):
-            output_message = False
-        if issubclass(tpe, CloudifyBootstrapError):
+        if issubclass(tpe, exceptions.SuppressedAriaCliError):
             output_message = False
         if verbose_output:
             # print traceback if verbose

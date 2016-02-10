@@ -18,8 +18,10 @@ Handles 'aria --version'
 """
 
 import argparse
+
 from StringIO import StringIO
-from aria_cli.utils import get_version_data
+
+from aria_cli import utils
 
 
 class VersionAction(argparse.Action):
@@ -51,7 +53,7 @@ class VersionAction(argparse.Action):
         return output.getvalue()
 
     def __call__(self, parser, namespace, values, option_string=None):
-        cli_version_data = get_version_data()
+        cli_version_data = utils.get_version_data()
         cli_version = self._format_version_data(
             cli_version_data,
             prefix='ARIA CLI ',
