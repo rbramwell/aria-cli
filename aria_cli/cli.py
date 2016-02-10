@@ -1,5 +1,5 @@
 ########
-# Copyright (c) 2013 GigaSpaces Technologies Ltd. All rights reserved
+# Copyright (c) 2016 GigaSpaces Technologies Ltd. All rights reserved
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -63,7 +63,7 @@ def register_commands():
     parser_conf = parser_config()
     parser = argparse.ArgumentParser(description=parser_conf['description'])
 
-    # Direct arguments for the 'aria' command (like -v)
+    # Direct arguments for the 'cfy' command (like -v)
     for argument_name, argument in parser_conf['arguments'].iteritems():
         parser.add_argument(argument_name, **argument)
 
@@ -72,7 +72,8 @@ def register_commands():
 
         if 'sub_commands' in command:
 
-            # Add sub commands. Such as 'aria blueprints list',
+            # Add sub commands. Such as 'cfy blueprints list',
+            # 'cfy deployments create' ...
             controller_help = command['help']
             controller_parser = subparsers.add_parser(
                 command_name, help=controller_help
@@ -85,7 +86,7 @@ def register_commands():
                                  controller_sub_command)
         else:
 
-            # Add direct commands.
+            # Add direct commands. Such as 'cfy status', 'cfy ssh' ...
             register_command(subparsers, command_name, command)
 
     return parser
@@ -119,7 +120,7 @@ def register_command(subparsers, command_name, command):
         '-v', '--verbose',
         dest='verbosity',
         action='store_true',
-        help='A flag for setting verbose output'
+        help='Set verbose output'
     )
 
     # Add debug flag for each command
@@ -127,7 +128,7 @@ def register_command(subparsers, command_name, command):
         '--debug',
         dest='debug',
         action='store_true',
-        help='A flag for setting debug output'
+        help='Set debug output'
     )
 
     def command_cmd_handler(args):
@@ -164,7 +165,7 @@ def set_debug():
 
     """
 
-    from aria_cli.logger import all_loggers
+    from cloudify_cli.logger import all_loggers
     for logger_name in all_loggers():
         logging.getLogger(logger_name)\
             .setLevel(logging.DEBUG)

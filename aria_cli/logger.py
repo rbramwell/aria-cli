@@ -19,9 +19,6 @@ import logging
 import logging.config
 import os
 import copy
-import warnings
-
-from requests.packages.urllib3.exceptions import InsecurePlatformWarning
 
 from cloudify import logs
 from aria_cli.config import logger_config
@@ -41,9 +38,6 @@ def all_loggers():
 
 
 def configure_loggers():
-
-    warnings.simplefilter(action='once', category=InsecurePlatformWarning)
-
     # first off, configure defaults
     # to enable the use of the logger
     # even before the init was executed.
@@ -56,7 +50,7 @@ def configure_loggers():
         _configure_from_file()
 
     global _lgr
-    _lgr = logging.getLogger('cloudify.cli.main')
+    _lgr = logging.getLogger('aria_cli.cli.main')
 
 
 def _configure_defaults():
@@ -64,7 +58,7 @@ def _configure_defaults():
     # add handlers to the main logger
     logger_dict = copy.deepcopy(logger_config.LOGGER)
     logger_dict['loggers'] = {
-        'cloudify.cli.main': {
+        'aria_cli.cli.main': {
             'handlers': list(logger_dict['handlers'].keys())
         }
     }
@@ -75,8 +69,8 @@ def _configure_defaults():
         os.makedirs(logfile_dir)
 
     logging.config.dictConfig(logger_dict)
-    logging.getLogger('cloudify.cli.main').setLevel(logging.INFO)
-    _all_loggers.add('cloudify.cli.main')
+    logging.getLogger('aria_cli.cli.main').setLevel(logging.INFO)
+    _all_loggers.add('aria_cli.cli.main')
 
 
 def _configure_from_file():
@@ -137,7 +131,7 @@ def get_events_logger():
 
     # currently needs to be imported dynamically since
     # otherwise it creates a circular import.
-    from aria_cli.cli import verbose_output
+    from cloudify_cli.cli import verbose_output
 
     if verbose_output:
         return verbose_events_logger
