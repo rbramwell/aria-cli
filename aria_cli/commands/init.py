@@ -23,32 +23,32 @@ import shutil
 from aria_cli import utils
 from aria_cli import constants
 from aria_cli import exceptions
-from aria_cli.logger import get_logger
-from aria_cli.logger import configure_loggers
+from aria_cli import logger
 
 
 def init(reset_config, skip_logging=False):
     if os.path.exists(os.path.join(
             utils.get_cwd(),
-            constants.CLOUDIFY_WD_SETTINGS_DIRECTORY_NAME,
-            constants.CLOUDIFY_WD_SETTINGS_FILE_NAME)):
+            constants.ARIA_WD_SETTINGS_DIRECTORY_NAME,
+            constants.ARIA_WD_SETTINGS_FILE_NAME)):
         if not reset_config:
             msg = 'Current directory is already initialized'
-            error = exceptions.CloudifyCliError(msg)
+            error = exceptions.AriaCliError(msg)
             error.possible_solutions = [
-                "Run 'cfy init -r' to force re-initialization "
+                "Run 'aria init -p [path-to-a-blueprint]' "
+                "to force re-initialization "
                 "(might overwrite existing "
-                "configuration files if exist) "
+                "configuration files if exist)"
             ]
             raise error
         else:
             shutil.rmtree(os.path.join(
                 utils.get_cwd(),
-                constants.CLOUDIFY_WD_SETTINGS_DIRECTORY_NAME))
+                constants.ARIA_WD_SETTINGS_DIRECTORY_NAME))
 
-    settings = utils.CloudifyWorkingDirectorySettings()
-    utils.dump_cloudify_working_dir_settings(settings)
+    settings = utils.AriaWorkingDirectorySettings()
+    utils.dump_aria_working_dir_settings(settings)
     utils.dump_configuration_file()
-    configure_loggers()
+    logger.configure_loggers()
     if not skip_logging:
-        get_logger().info('Initialization completed successfully')
+        logger.get_logger().info('Initialization completed successfully')

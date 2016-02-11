@@ -19,20 +19,17 @@ import shutil
 import unittest
 from mock import patch
 
-from cloudify_rest_client import CloudifyClient
-from cloudify_rest_client.exceptions import CloudifyClientError
 from cloudify.utils import setup_logger
 
 
 from aria_cli import exceptions
 from aria_cli.tests import cli_runner
 from aria_cli import utils
-from aria_cli.utils import os as utils_os
 from aria_cli.utils import DEFAULT_LOG_FILE
 
 
-TEST_DIR = '/tmp/cloudify-cli-component-tests'
-TEST_WORK_DIR = TEST_DIR + "/cloudify"
+TEST_DIR = '/tmp/aria-cli-component-tests'
+TEST_WORK_DIR = TEST_DIR + "/aria"
 THIS_DIR = os.path.dirname(os.path.dirname(__file__))
 BLUEPRINTS_DIR = os.path.join(THIS_DIR, 'resources', 'blueprints')
 
@@ -58,25 +55,16 @@ class CliCommandTest(unittest.TestCase):
         if not os.path.exists(TEST_WORK_DIR):
             os.makedirs(TEST_WORK_DIR)
 
-        self.client = CloudifyClient()
-
-        def get_mock_rest_client(
-                manager_ip=None, rest_port=None, protocol=None):
-            return self.client
-
-        self.original_utils_get_rest_client = utils.get_rest_client
-        utils.get_rest_client = get_mock_rest_client
         self.original_utils_get_cwd = utils.get_cwd
         utils.get_cwd = lambda: TEST_WORK_DIR
-        self.original_utils_os_getcwd = utils_os.getcwd
-        utils_os.getcwd = lambda: TEST_WORK_DIR
+        self.original_utils_os_getcwd = os.getcwd
+        os.getcwd = lambda: TEST_WORK_DIR
 
     def tearDown(self):
 
         # remove mocks
-        utils.get_rest_client = self.original_utils_get_rest_client
         utils.get_cwd = self.original_utils_get_cwd = utils.get_cwd
-        utils_os.getcwd = self.original_utils_os_getcwd = utils_os.getcwd
+        os.getcwd = self.original_utils_os_getcwd = os.getcwd
 
         # empty log file
         if os.path.exists(DEFAULT_LOG_FILE):
@@ -106,21 +94,13 @@ class CliCommandTest(unittest.TestCase):
             cli_runner.run_cli(cli_cmd)
             self.fail('Expected error {0} was not raised for command {1}'
                       .format(err_str_segment, cli_cmd))
-        except SystemExit, ex:
-            _assert()
-        except exceptions.CloudifyCliError, ex:
-            _assert()
-        except exceptions.CloudifyValidationError, ex:
-            _assert()
-        except CloudifyClientError, ex:
-            _assert()
-        except ValueError, ex:
-            _assert()
-        except IOError, ex:
-            _assert()
-        except ImportError as ex:
-            _assert()
-        except Exception as ex:
+        except (exceptions.AriaCliError,
+                SystemExit,
+                exceptions.AriaValidationError,
+                ValueError,
+                IOError,
+                ImportError,
+                Exception) as ex:
             _assert()
 
     def assert_method_called(self,
@@ -136,12 +116,12 @@ class CliCommandTest(unittest.TestCase):
             mock.assert_called_with(**kwargs)
 
     def _create_cosmo_wd_settings(self, settings=None):
-        directory_settings = utils.CloudifyWorkingDirectorySettings()
+        directory_settings = utils.AriaWorkingDirectorySettings()
         directory_settings.set_management_server('localhost')
         utils.delete_cloudify_working_dir_settings()
-        utils.dump_cloudify_working_dir_settings(
+        utils.dump_aria_working_dir_settings(
             settings or directory_settings, update=False)
         utils.dump_configuration_file()
 
     def _read_cosmo_wd_settings(self):
-        return utils.load_cloudify_working_dir_settings()
+        return utils.load_aria_working_dir_settings()

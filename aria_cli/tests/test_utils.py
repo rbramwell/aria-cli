@@ -20,12 +20,11 @@ import unittest
 
 from aria_cli import utils
 from aria_cli import constants
-from aria_cli.exceptions import CloudifyCliError
-from aria_cli.utils import CloudifyWorkingDirectorySettings
+from aria_cli.exceptions import AriaCliError
 
 
-TEST_DIR = '/tmp/cloudify-cli-unit-tests'
-TEST_WORK_DIR = TEST_DIR + '/cloudify'
+TEST_DIR = '/tmp/aria-cli-unit-tests'
+TEST_WORK_DIR = TEST_DIR + '/aria'
 
 
 class CliUtilsUnitTests(unittest.TestCase):
@@ -57,7 +56,7 @@ class CliUtilsUnitTests(unittest.TestCase):
 
         # first create the init
         init_path = os.path.join(utils.get_cwd(),
-                                 constants.CLOUDIFY_WD_SETTINGS_DIRECTORY_NAME)
+                                 constants.ARIA_WD_SETTINGS_DIRECTORY_NAME)
         os.mkdir(init_path)
 
         # switch working directory to inner one
@@ -72,7 +71,7 @@ class CliUtilsUnitTests(unittest.TestCase):
 
         # first create the init
         init_path = os.path.join(utils.get_cwd(),
-                                 constants.CLOUDIFY_WD_SETTINGS_DIRECTORY_NAME)
+                                 constants.ARIA_WD_SETTINGS_DIRECTORY_NAME)
         os.mkdir(init_path)
 
         self.assertEqual(utils.get_init_path(), init_path)
@@ -80,31 +79,32 @@ class CliUtilsUnitTests(unittest.TestCase):
     def test_get_init_path_from_outside_dir(self):
 
         # first create the init
-        init_path = os.path.join(utils.get_cwd(),
-                                 constants.CLOUDIFY_WD_SETTINGS_DIRECTORY_NAME)
+        init_path = os.path.join(
+            utils.get_cwd(), constants.ARIA_WD_SETTINGS_DIRECTORY_NAME)
         os.mkdir(init_path)
 
         # switch working directory to outer one
         new_cwd = os.path.dirname(os.path.dirname(init_path))
         utils.get_cwd = lambda: new_cwd
 
-        self.assertRaises(CloudifyCliError, utils.get_context_path)
+        self.assertRaises(AriaCliError, utils.get_context_path)
 
     def test_dump_cosmo_working_dir_settings_update(self):
 
-        self.assertRaises(CloudifyCliError,
-                          utils.dump_cloudify_working_dir_settings,
-                          cosmo_wd_settings=CloudifyWorkingDirectorySettings(),
-                          update=True)
+        self.assertRaises(
+            AriaCliError,
+            utils.dump_aria_working_dir_settings,
+            cosmo_wd_settings=utils.AriaWorkingDirectorySettings(),
+            update=True)
 
     def test_dump_cosmo_working_dir_settings_create(self):
 
-        directory_settings = CloudifyWorkingDirectorySettings()
-        utils.dump_cloudify_working_dir_settings(
+        directory_settings = utils.AriaWorkingDirectorySettings()
+        utils.dump_aria_working_dir_settings(
             cosmo_wd_settings=directory_settings,
             update=False)
 
-        utils.load_cloudify_working_dir_settings()
+        utils.load_aria_working_dir_settings()
 
     def test_parsing_input_as_string(self):
 
@@ -149,35 +149,35 @@ class CliUtilsUnitTests(unittest.TestCase):
                            "format is: key1=value1;key2=value2"
 
         input_str = "my_key1"
-        self.assertRaisesRegexp(CloudifyCliError,
+        self.assertRaisesRegexp(AriaCliError,
                                 expected_err_msg.format(input_str),
                                 utils.plain_string_to_dict, input_str)
 
         input_str = "my_key1;"
-        self.assertRaisesRegexp(CloudifyCliError,
+        self.assertRaisesRegexp(AriaCliError,
                                 expected_err_msg.format(input_str),
                                 utils.plain_string_to_dict, input_str)
 
         input_str = "my_key1=my_value1;myvalue2;"
-        self.assertRaisesRegexp(CloudifyCliError,
+        self.assertRaisesRegexp(AriaCliError,
                                 expected_err_msg.format(input_str),
                                 utils.plain_string_to_dict,
                                 input_str)
 
         input_str = "my_key1=my_value1;my_key2=myvalue2;my_other_value2;"
-        self.assertRaisesRegexp(CloudifyCliError,
+        self.assertRaisesRegexp(AriaCliError,
                                 expected_err_msg.format(input_str),
                                 utils.plain_string_to_dict,
                                 input_str)
 
         input_str = "my_key1=my_value1;my_key2=myvalue2;my_other_value2;"
-        self.assertRaisesRegexp(CloudifyCliError,
+        self.assertRaisesRegexp(AriaCliError,
                                 expected_err_msg.format(input_str),
                                 utils.plain_string_to_dict,
                                 input_str)
 
         input_str = "my_key1:my_value1;my_key2:my_value2"
-        self.assertRaisesRegexp(CloudifyCliError,
+        self.assertRaisesRegexp(AriaCliError,
                                 expected_err_msg.format(input_str),
                                 utils.plain_string_to_dict,
                                 input_str)
@@ -191,7 +191,7 @@ class CliUtilsUnitTests(unittest.TestCase):
                            " to a YAML file, a string formatted as YAML or" \
                            " a string formatted as key1=value1;key2=value2"
         self.assertRaisesRegexp(
-            CloudifyCliError,
+            AriaCliError,
             expected_err_msg.format(input_str, resource_name),
             utils.inputs_to_dict,
             input_str,

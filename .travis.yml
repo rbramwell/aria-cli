@@ -19,6 +19,7 @@ install:
 script:
   - tox -e $TOX_ENV
   - pip install -e .
+  - pip install aria-script-plugin
   - aria init -p cloudify-nodecellar-example/local-blueprint.yaml
   - aria execute -w install
   - aria execute -w uninstall

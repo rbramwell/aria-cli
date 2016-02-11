@@ -19,13 +19,15 @@ import tempfile
 
 from cloudify.utils import LocalCommandRunner
 from cloudify.workflows import local
+
 from dsl_parser import constants as dsl_constants
-from dsl_parser.parser import parse_from_path
+from dsl_parser import parser
+
+from aria_cli import constants
+from aria_cli import exceptions
+from aria_cli import logger
 
 from aria_cli import utils
-from aria_cli import constants
-from aria_cli.logger import get_logger
-from aria_cli import exceptions
 
 
 def initialize_blueprint(blueprint_path,
@@ -59,11 +61,11 @@ def install_blueprint_plugins(blueprint_path):
     if requirements:
         # validate we are inside a virtual env
         if not utils.is_virtual_env():
-            raise exceptions.CloudifyCliError(
+            raise exceptions.AriaCliError(
                 'You must be running inside a '
                 'virtualenv to install blueprint plugins')
 
-        runner = LocalCommandRunner(get_logger())
+        runner = LocalCommandRunner(logger.get_logger())
         # dump the requirements to a file
         # and let pip install it.
         # this will utilize pip's mechanism
@@ -73,12 +75,13 @@ def install_blueprint_plugins(blueprint_path):
         runner.run(command='pip install -r {0}'.format(tmp_path),
                    stdout_pipe=False)
     else:
-        get_logger().debug('There are no plugins to install..')
+        logger.get_logger().debug('There are no plugins to install..')
 
 
 def create_requirements(blueprint_path):
 
-    parsed_dsl = parse_from_path(dsl_file_path=blueprint_path)
+    parsed_dsl = parser.parse_from_path(
+        dsl_file_path=blueprint_path)
 
     requirements = _plugins_to_requirements(
         blueprint_path=blueprint_path,

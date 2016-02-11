@@ -20,23 +20,23 @@ import pkgutil
 import sys
 import tempfile
 import getpass
-from contextlib import contextmanager
-
 import yaml
 import pkg_resources
-from jinja2.environment import Template
-from itsdangerous import base64_encode
 
-from cloudify_rest_client import CloudifyClient
+from contextlib import contextmanager
+from jinja2 import environment
+
 
 import aria_cli
+
 from aria_cli import constants
-from aria_cli.exceptions import CloudifyCliError
+from aria_cli import exceptions
+
 from dsl_parser import utils as dsl_parser_utils
-from dsl_parser.constants import IMPORT_RESOLVER_KEY
+from dsl_parser import constants as dsl_constants
 
 DEFAULT_LOG_FILE = os.path.expanduser(
-    '{0}/cloudify-{1}/cloudify-cli.log'
+    '{0}/aria-{1}/aria-cli.log'
     .format(tempfile.gettempdir(),
             getpass.getuser()))
 
@@ -51,22 +51,22 @@ def is_virtual_env():
     return hasattr(sys, 'real_prefix')
 
 
-def load_cloudify_working_dir_settings(suppress_error=False):
+def load_aria_working_dir_settings(suppress_error=False):
     try:
         path = get_context_path()
         with open(path, 'r') as f:
             return yaml.load(f.read())
-    except CloudifyCliError:
+    except exceptions.AriaCliError:
         if suppress_error:
             return None
         raise
 
 
 def raise_uninitialized():
-    error = CloudifyCliError(
+    error = exceptions.AriaCliError(
         'Not initialized: Cannot find {0} in {1}, '
         'or in any of its parent directories'
-        .format(constants.CLOUDIFY_WD_SETTINGS_DIRECTORY_NAME,
+        .format(constants.ARIA_WD_SETTINGS_DIRECTORY_NAME,
                 get_cwd()))
     error.possible_solutions = [
         "Run 'cfy init' in this directory"
@@ -80,10 +80,10 @@ def get_context_path():
         raise_uninitialized()
     context_path = os.path.join(
         init_path,
-        constants.CLOUDIFY_WD_SETTINGS_FILE_NAME
+        constants.ARIA_WD_SETTINGS_FILE_NAME
     )
     if not os.path.exists(context_path):
-        raise CloudifyCliError(
+        raise exceptions.AriaCliError(
             'File {0} does not exist'
             .format(context_path)
         )
@@ -96,7 +96,7 @@ def inputs_to_dict(resource, resource_name):
     try:
         # parse resource as string representation of a dictionary
         parsed_dict = plain_string_to_dict(resource)
-    except CloudifyCliError:
+    except exceptions.AriaCliError:
         try:
             # if resource is a path - parse as a yaml file
             if os.path.exists(resource):
@@ -108,7 +108,7 @@ def inputs_to_dict(resource, resource_name):
         except yaml.error.YAMLError as e:
             msg = ("'{0}' is not a valid YAML. {1}"
                    .format(resource_name, str(e)))
-            raise CloudifyCliError(msg)
+            raise exceptions.AriaCliError(msg)
 
     if isinstance(parsed_dict, dict):
         return parsed_dict
@@ -118,7 +118,7 @@ def inputs_to_dict(resource, resource_name):
               "formatted as YAML or a string formatted as " \
               "key1=value1;key2=value2" \
             .format(resource, resource_name)
-        raise CloudifyCliError(msg)
+        raise exceptions.AriaCliError(msg)
 
 
 def plain_string_to_dict(input_string):
@@ -137,7 +137,7 @@ def plain_string_to_dict(input_string):
         else:
             msg = "Invalid input format: {0}, the expected format is: " \
                   "key1=value1;key2=value2".format(input_string)
-            raise CloudifyCliError(msg)
+            raise exceptions.AriaCliError(msg)
 
     return input_dict
 
@@ -151,7 +151,7 @@ def get_init_path():
     while True:
 
         path = os.path.join(current_lookup_dir,
-                            constants.CLOUDIFY_WD_SETTINGS_DIRECTORY_NAME)
+                            constants.ARIA_WD_SETTINGS_DIRECTORY_NAME)
 
         if os.path.exists(path):
             return path
@@ -162,9 +162,9 @@ def get_init_path():
 
 
 def get_configuration_path():
-    dot_cloudify = get_init_path()
+    dot_aria = get_init_path()
     return os.path.join(
-        dot_cloudify,
+        dot_aria,
         'config.yaml'
     )
 
@@ -174,7 +174,7 @@ def dump_configuration_file():
         aria_cli.__name__,
         'resources/config.yaml')
 
-    template = Template(config)
+    template = environment.Template(config)
     rendered = template.render(log_path=DEFAULT_LOG_FILE)
     target_config_path = get_configuration_path()
     with open(os.path.join(target_config_path), 'w') as f:
@@ -182,9 +182,9 @@ def dump_configuration_file():
         f.write(os.linesep)
 
 
-def dump_cloudify_working_dir_settings(cosmo_wd_settings=None, update=False):
+def dump_aria_working_dir_settings(cosmo_wd_settings=None, update=False):
     if cosmo_wd_settings is None:
-        cosmo_wd_settings = CloudifyWorkingDirectorySettings()
+        cosmo_wd_settings = AriaWorkingDirectorySettings()
     if update:
         # locate existing file
         # this will raise an error if the file doesnt exist.
@@ -193,12 +193,12 @@ def dump_cloudify_working_dir_settings(cosmo_wd_settings=None, update=False):
 
         # create a new file
         path = os.path.join(get_cwd(),
-                            constants.CLOUDIFY_WD_SETTINGS_DIRECTORY_NAME)
+                            constants.ARIA_WD_SETTINGS_DIRECTORY_NAME)
         if not os.path.exists(path):
             os.mkdir(path)
         target_file_path = os.path.join(
-            get_cwd(), constants.CLOUDIFY_WD_SETTINGS_DIRECTORY_NAME,
-            constants.CLOUDIFY_WD_SETTINGS_FILE_NAME)
+            get_cwd(), constants.ARIA_WD_SETTINGS_DIRECTORY_NAME,
+            constants.ARIA_WD_SETTINGS_FILE_NAME)
 
     with open(target_file_path, 'w') as f:
         f.write(yaml.dump(cosmo_wd_settings))
@@ -216,90 +216,13 @@ def get_import_resolver():
 
 @contextmanager
 def update_wd_settings():
-    cosmo_wd_settings = load_cloudify_working_dir_settings()
+    cosmo_wd_settings = load_aria_working_dir_settings()
     yield cosmo_wd_settings
-    dump_cloudify_working_dir_settings(cosmo_wd_settings, update=True)
+    dump_aria_working_dir_settings(cosmo_wd_settings, update=True)
 
 
 def get_cwd():
     return os.getcwd()
-
-
-def get_rest_client(manager_ip=None, rest_port=None, protocol=None):
-    if not manager_ip:
-        manager_ip = get_management_server_ip()
-
-    if not rest_port:
-        rest_port = get_rest_port()
-
-    if not protocol:
-        protocol = get_protocol()
-
-    username = get_username()
-
-    password = get_password()
-
-    headers = get_auth_header(username, password)
-
-    cert = get_ssl_cert()
-
-    trust_all = get_ssl_trust_all()
-
-    return CloudifyClient(host=manager_ip, port=rest_port, protocol=protocol,
-                          headers=headers, cert=cert, trust_all=trust_all)
-
-
-def get_auth_header(username, password):
-    header = None
-
-    if username and password:
-        credentials = '{0}:{1}'.format(username, password)
-        header = {
-            constants.CLOUDIFY_AUTHENTICATION_HEADER:
-            constants.BASIC_AUTH_PREFIX + ' ' + base64_encode(credentials)}
-
-    return header
-
-
-def get_rest_port():
-    cosmo_wd_settings = load_cloudify_working_dir_settings()
-    return cosmo_wd_settings.get_rest_port()
-
-
-def get_protocol():
-    cosmo_wd_settings = load_cloudify_working_dir_settings()
-    return cosmo_wd_settings.get_protocol()
-
-
-def get_management_server_ip():
-    cosmo_wd_settings = load_cloudify_working_dir_settings()
-    management_ip = cosmo_wd_settings.get_management_server()
-    if management_ip:
-        return management_ip
-
-    msg = ("Must either first run 'cfy use' command for a "
-           "management server or provide a management "
-           "server ip explicitly")
-    raise CloudifyCliError(msg)
-
-
-def get_username():
-    return os.environ.get(constants.CLOUDIFY_USERNAME_ENV)
-
-
-def get_password():
-    return os.environ.get(constants.CLOUDIFY_PASSWORD_ENV)
-
-
-def get_ssl_cert():
-    return os.environ.get(constants.CLOUDIFY_SSL_CERT)
-
-
-def get_ssl_trust_all():
-    trust_all = os.environ.get(constants.CLOUDIFY_SSL_TRUST_ALL)
-    if trust_all is not None and len(trust_all) > 0:
-        return True
-    return False
 
 
 def decode_list(data):
@@ -340,7 +263,7 @@ def get_version_data():
     return json.loads(data)
 
 
-class CloudifyWorkingDirectorySettings(yaml.YAMLObject):
+class AriaWorkingDirectorySettings(yaml.YAMLObject):
     yaml_tag = u'!WD_Settings'
     yaml_loader = yaml.Loader
 
@@ -394,8 +317,8 @@ class CloudifyWorkingDirectorySettings(yaml.YAMLObject):
 
 def delete_cloudify_working_dir_settings():
     target_file_path = os.path.join(
-        get_cwd(), constants.CLOUDIFY_WD_SETTINGS_DIRECTORY_NAME,
-        constants.CLOUDIFY_WD_SETTINGS_FILE_NAME)
+        get_cwd(), constants.ARIA_WD_SETTINGS_DIRECTORY_NAME,
+        constants.ARIA_WD_SETTINGS_FILE_NAME)
     if os.path.exists(target_file_path):
         os.remove(target_file_path)
 
@@ -427,4 +350,5 @@ class CloudifyConfig(object):
 
     @property
     def local_import_resolver(self):
-        return self._config.get(IMPORT_RESOLVER_KEY, {})
+        return self._config.get(
+            dsl_constants.IMPORT_RESOLVER_KEY, {})

@@ -131,7 +131,7 @@ def get_events_logger():
 
     # currently needs to be imported dynamically since
     # otherwise it creates a circular import.
-    from cloudify_cli.cli import verbose_output
+    from aria_cli.cli import verbose_output
 
     if verbose_output:
         return verbose_events_logger

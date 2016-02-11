@@ -18,9 +18,13 @@
 import argparse
 
 from aria_cli import commands as aria
-from aria_cli.config import completion_utils
 from aria_cli.config import argument_utils
-from dsl_parser import parser as aria_dsl_parser
+
+from argcomplete.completers import FilesCompleter
+
+yaml_files_completer = FilesCompleter(['*.yml', '*.yaml'])
+archive_files_completer = FilesCompleter(
+    ['*.zip', '*.tar', '*.tar.gz', '*.tar.bz2'])
 
 FORMAT_INPUT_AS_YAML_OR_DICT = 'formatted as YAML or as "key1=value1;key2=value2"'
 
@@ -32,7 +36,6 @@ def workflow_id_argument(hlp):
         'type': str,
         'required': True,
         'help': hlp,
-        'completer': completion_utils.workflow_id_completer
     }
 
 
@@ -54,7 +57,7 @@ def parser_config():
                         'dest': 'blueprint_path',
                         'required': True,
                         'help': "Path to the application's blueprint file",
-                        'completer': completion_utils.yaml_files_completer
+                        'completer': yaml_files_completer
                     }
                 },
                 'help': 'command for validating a blueprint',

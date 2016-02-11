@@ -22,22 +22,21 @@ import json
 import tempfile
 
 
-from cloudify.decorators import operation, workflow
 from cloudify import ctx as op_ctx
-from cloudify.exceptions import CommandExecutionException
+from cloudify.decorators import operation
+from cloudify.decorators import workflow
+
+from cloudify import exceptions as cfy_exceptions
 from cloudify.workflows import ctx as workflow_ctx
 from dsl_parser.constants import HOST_TYPE
 
 from aria_cli import common
 
 from aria_cli.tests import cli_runner
-from aria_cli.tests.commands.test_cli_command import CliCommandTest
-from aria_cli.tests.commands.test_cli_command import \
-    (BLUEPRINTS_DIR,
-     TEST_WORK_DIR)
+from aria_cli.tests.commands import test_cli_command
 
 
-class LocalTest(CliCommandTest):
+class LocalTest(test_cli_command.CliCommandTest):
 
     def setUp(self):
         super(LocalTest, self).setUp()
@@ -72,7 +71,7 @@ class LocalTest(CliCommandTest):
     def test_local_init_install_plugins(self):
 
         blueprint_path = '{0}/local/{1}.yaml' \
-            .format(BLUEPRINTS_DIR,
+            .format(test_cli_command.BLUEPRINTS_DIR,
                     'blueprint_with_plugins')
 
         self.assert_method_called(
@@ -85,16 +84,16 @@ class LocalTest(CliCommandTest):
 
     def test_empty_requirements(self):
         blueprint = 'blueprint_without_plugins'
-        blueprint_path = '{0}/local/{1}.yaml'.format(BLUEPRINTS_DIR,
-                                                     blueprint)
+        blueprint_path = '{0}/local/{1}.yaml'.format(
+            test_cli_command.BLUEPRINTS_DIR, blueprint)
         cli_runner.run_cli('aria init --install-plugins -p {0}'
                            .format(blueprint_path))
 
     def test_local_init_missing_plugin(self):
 
         blueprint = 'blueprint_with_plugins'
-        blueprint_path = '{0}/local/{1}.yaml'.format(BLUEPRINTS_DIR,
-                                                     blueprint)
+        blueprint_path = '{0}/local/{1}.yaml'.format(
+            test_cli_command.BLUEPRINTS_DIR, blueprint)
 
         expected_possible_solutions = [
             "Run 'aria init --install-plugins -p {0}'"
@@ -150,7 +149,8 @@ class LocalTest(CliCommandTest):
         self._assert_ex('aria  execute -w run_test_op_on_nodes',
                         'has not been initialized',
                         possible_solutions=[
-                            "Run 'aria init' in this directory"
+                            "Run 'aria init -p [path-to-blueprint]' "
+                            "in this directory"
                         ])
 
     def test_create_requirements(self):
@@ -164,12 +164,13 @@ class LocalTest(CliCommandTest):
                 'plugins',
                 'local_plugin'),
             'http://localhost/host_plugin.zip'}
-        requirements_file_path = os.path.join(TEST_WORK_DIR,
+        requirements_file_path = os.path.join(test_cli_command.TEST_WORK_DIR,
                                               'requirements.txt')
 
         cli_runner.run_cli('aria create-requirements -p '
                            '{0}/local/blueprint_with_plugins.yaml -o {1}'
-                           .format(BLUEPRINTS_DIR, requirements_file_path))
+                           .format(test_cli_command.BLUEPRINTS_DIR,
+                                   requirements_file_path))
 
         with open(requirements_file_path, 'r') as f:
             actual_requirements = set(f.read().split())
@@ -177,7 +178,7 @@ class LocalTest(CliCommandTest):
 
     def test_create_requirements_existing_output_file(self):
         blueprint_path = '{0}/local/blueprint_with_plugins.yaml'\
-            .format(BLUEPRINTS_DIR)
+            .format(test_cli_command.BLUEPRINTS_DIR)
         file_path = tempfile.mktemp()
         with open(file_path, 'w') as f:
             f.write('')
@@ -202,13 +203,13 @@ class LocalTest(CliCommandTest):
         output = cli_runner.run_cli(
             'aria create-requirements -p '
             '{0}/local/blueprint_with_plugins.yaml'
-            .format(BLUEPRINTS_DIR))
+            .format(test_cli_command.BLUEPRINTS_DIR))
         for requirement in expected_requirements:
             self.assertIn(requirement, output)
 
     def test_install_agent(self):
         blueprint_path = '{0}/local/install-agent-blueprint.yaml' \
-            .format(BLUEPRINTS_DIR)
+            .format(test_cli_command.BLUEPRINTS_DIR)
         try:
             cli_runner.run_cli('aria init -p {0}'.format(blueprint_path))
             self.fail('ValueError was expected')
@@ -223,32 +224,27 @@ class LocalTest(CliCommandTest):
     def test_install_plugins(self):
 
         blueprint_path = ('{0}/local/blueprint_with_plugins.yaml'.
-                          format(BLUEPRINTS_DIR))
+                          format(test_cli_command.BLUEPRINTS_DIR))
         try:
             cli_runner.run_cli('aria install-plugins -p {0}'
                                .format(blueprint_path))
-        except CommandExecutionException as e:
+        except cfy_exceptions.CommandExecutionException as e:
             # Expected pip install to start
             self.assertIn('pip install -r ',
                           e.message)
-
-    def test_install_plugins_missing_windows_agent_installer(self):
-        blueprint_path = ('{0}/local/windows_installers_blueprint.yaml'.
-                          format(BLUEPRINTS_DIR))
-        cli_runner.run_cli('aria init -p {0}'.format(blueprint_path))
 
     def _local_init(self,
                     inputs=None,
                     blueprint='blueprint',
                     install_plugins=False):
 
-        blueprint_path = '{0}/local/{1}.yaml'.format(BLUEPRINTS_DIR,
-                                                     blueprint)
+        blueprint_path = '{0}/local/{1}.yaml'.format(
+            test_cli_command.BLUEPRINTS_DIR, blueprint)
         flags = '--install-plugins' if install_plugins else ''
         command = 'aria init {0} -p {1}'.format(flags,
                                                 blueprint_path)
         if inputs:
-            inputs_path = os.path.join(TEST_WORK_DIR,
+            inputs_path = os.path.join(test_cli_command.TEST_WORK_DIR,
                                        'temp_inputs.json')
             with open(inputs_path, 'w') as f:
                 f.write(json.dumps(inputs))
@@ -259,7 +255,7 @@ class LocalTest(CliCommandTest):
                        allow_custom=None,
                        workflow_name='run_test_op_on_nodes'):
         if parameters:
-            parameters_path = os.path.join(TEST_WORK_DIR,
+            parameters_path = os.path.join(test_cli_command.TEST_WORK_DIR,
                                            'temp_parameters.json')
             with open(parameters_path, 'w') as f:
                 f.write(json.dumps(parameters))
