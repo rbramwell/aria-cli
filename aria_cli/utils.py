@@ -30,9 +30,7 @@ import aria_cli
 
 from aria_cli import constants
 from aria_cli import exceptions
-
-from dsl_parser import utils as dsl_parser_utils
-from dsl_parser import constants as dsl_constants
+from aria_cli.dependencies import futures
 
 DEFAULT_LOG_FILE = os.path.expanduser(
     '{0}/aria-{1}/aria-cli.log'
@@ -210,7 +208,8 @@ def get_import_resolver():
     config = CloudifyConfig()
     # get the resolver configuration from the config file
     local_import_resolver = config.local_import_resolver
-    return dsl_parser_utils.create_import_resolver(local_import_resolver)
+    return futures.aria_dsl_utils.create_import_resolver(
+        local_import_resolver)
 
 
 @contextlib.contextmanager
@@ -350,4 +349,4 @@ class CloudifyConfig(object):
     @property
     def local_import_resolver(self):
         return self._config.get(
-            dsl_constants.IMPORT_RESOLVER_KEY, {})
+            futures.aria_dsl_constants.IMPORT_RESOLVER_KEY, {})

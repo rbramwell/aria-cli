@@ -26,12 +26,7 @@ from aria_cli import common
 from aria_cli import logger
 from aria_cli import utils
 from aria_cli.commands import init as aria
-
-
-from cloudify.workflows import local
-
-from dsl_parser import exceptions as aria_dsl_exceptions
-from dsl_parser import parser as aria_dsl_parser
+from aria_cli.dependencies import futures
 
 _NAME = 'local'
 _STORAGE_DIR_NAME = 'local-storage'
@@ -39,11 +34,11 @@ _STORAGE_DIR_NAME = 'local-storage'
 
 def validate(blueprint_path=None):
     try:
-        return aria_dsl_parser.parse_from_path(
+        return futures.aria_dsl_parser.parse_from_path(
             str(blueprint_path)
             if not isinstance(blueprint_path, file)
             else blueprint_path.name)
-    except aria_dsl_exceptions.DSLParsingException as e:
+    except futures.aria_dsl_exceptions.DSLParsingException as e:
         _logger = logger.get_logger()
         _logger.error(str(e))
         raise Exception("Failed to validate blueprint. %s", str(e))
@@ -161,7 +156,7 @@ def _storage_dir():
 
 
 def _storage():
-    return local.FileStorage(storage_dir=_storage_dir())
+    return futures.aria_local.FileStorage(storage_dir=_storage_dir())
 
 
 def _load_env():
@@ -177,5 +172,4 @@ def _load_env():
             "Run 'aria init -p [path-to-blueprint]' in this directory"
         ]
         raise error
-    return local.load_env(name=_NAME,
-                          storage=_storage())
+    return futures.aria_local.load_env(name=_NAME, storage=_storage())

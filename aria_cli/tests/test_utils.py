@@ -19,7 +19,7 @@ import unittest
 
 from aria_cli import utils
 from aria_cli import constants
-from aria_cli.exceptions import AriaCliError
+from aria_cli import exceptions
 
 
 TEST_DIR = '/tmp/aria-cli-unit-tests'
@@ -86,12 +86,12 @@ class CliUtilsUnitTests(unittest.TestCase):
         new_cwd = os.path.dirname(os.path.dirname(init_path))
         utils.get_cwd = lambda: new_cwd
 
-        self.assertRaises(AriaCliError, utils.get_context_path)
+        self.assertRaises(exceptions.AriaCliError, utils.get_context_path)
 
     def test_dump_cosmo_working_dir_settings_update(self):
 
         self.assertRaises(
-            AriaCliError,
+            exceptions.AriaCliError,
             utils.dump_aria_working_dir_settings,
             cosmo_wd_settings=utils.AriaWorkingDirectorySettings(),
             update=True)
@@ -148,35 +148,35 @@ class CliUtilsUnitTests(unittest.TestCase):
                            "format is: key1=value1;key2=value2"
 
         input_str = "my_key1"
-        self.assertRaisesRegexp(AriaCliError,
+        self.assertRaisesRegexp(exceptions.AriaCliError,
                                 expected_err_msg.format(input_str),
                                 utils.plain_string_to_dict, input_str)
 
         input_str = "my_key1;"
-        self.assertRaisesRegexp(AriaCliError,
+        self.assertRaisesRegexp(exceptions.AriaCliError,
                                 expected_err_msg.format(input_str),
                                 utils.plain_string_to_dict, input_str)
 
         input_str = "my_key1=my_value1;myvalue2;"
-        self.assertRaisesRegexp(AriaCliError,
+        self.assertRaisesRegexp(exceptions.AriaCliError,
                                 expected_err_msg.format(input_str),
                                 utils.plain_string_to_dict,
                                 input_str)
 
         input_str = "my_key1=my_value1;my_key2=myvalue2;my_other_value2;"
-        self.assertRaisesRegexp(AriaCliError,
+        self.assertRaisesRegexp(exceptions.AriaCliError,
                                 expected_err_msg.format(input_str),
                                 utils.plain_string_to_dict,
                                 input_str)
 
         input_str = "my_key1=my_value1;my_key2=myvalue2;my_other_value2;"
-        self.assertRaisesRegexp(AriaCliError,
+        self.assertRaisesRegexp(exceptions.AriaCliError,
                                 expected_err_msg.format(input_str),
                                 utils.plain_string_to_dict,
                                 input_str)
 
         input_str = "my_key1:my_value1;my_key2:my_value2"
-        self.assertRaisesRegexp(AriaCliError,
+        self.assertRaisesRegexp(exceptions.AriaCliError,
                                 expected_err_msg.format(input_str),
                                 utils.plain_string_to_dict,
                                 input_str)
@@ -190,7 +190,7 @@ class CliUtilsUnitTests(unittest.TestCase):
                            " to a YAML file, a string formatted as YAML or" \
                            " a string formatted as key1=value1;key2=value2"
         self.assertRaisesRegexp(
-            AriaCliError,
+            exceptions.AriaCliError,
             expected_err_msg.format(input_str, resource_name),
             utils.inputs_to_dict,
             input_str,

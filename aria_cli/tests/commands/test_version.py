@@ -17,10 +17,10 @@ Tests 'aria --version'
 """
 
 from aria_cli.tests import cli_runner
-from aria_cli.tests.commands.test_cli_command import CliCommandTest
+from aria_cli.tests.commands import test_cli_command
 
 
-class VersionTest(CliCommandTest):
+class VersionTest(test_cli_command.CliCommandTest):
 
     def test_version(self):
         cli_runner.run_cli_expect_system_exit_0('aria --version')
