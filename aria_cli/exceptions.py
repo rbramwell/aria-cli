@@ -13,7 +13,7 @@
 #    under the License.
 
 """
-Cloudify Cli Exceptions
+Aria CLI Exceptions
 """
 
 

@@ -15,12 +15,12 @@
 import os
 import sys
 
-from cloudify.utils import setup_logger
-
 from aria_cli import cli
-from aria_cli.utils import DEFAULT_LOG_FILE
+from aria_cli import utils
+from aria_cli.dependencies import futures
 
-runner_lgr = setup_logger('cli_runner')
+
+runner_lgr = futures.aria_side_utils.setup_logger('cli_runner')
 
 
 def run_cli_expect_system_exit_0(command):
@@ -48,7 +48,7 @@ def run_cli(command):
 
     # Return the content of the log file
     # this enables making assertions on the output
-    if os.path.exists(DEFAULT_LOG_FILE):
-        with open(DEFAULT_LOG_FILE, 'r') as f:
+    if os.path.exists(utils.DEFAULT_LOG_FILE):
+        with open(utils.DEFAULT_LOG_FILE, 'r') as f:
             return f.read()
     return ''

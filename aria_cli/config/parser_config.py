@@ -19,10 +19,10 @@ import argparse
 from aria_cli import commands as aria
 from aria_cli.config import argument_utils
 
-from argcomplete.completers import FilesCompleter
+from argcomplete import completers
 
-yaml_files_completer = FilesCompleter(['*.yml', '*.yaml'])
-archive_files_completer = FilesCompleter(
+yaml_files_completer = completers.FilesCompleter(['*.yml', '*.yaml'])
+archive_files_completer = completers.FilesCompleter(
     ['*.zip', '*.tar', '*.tar.gz', '*.tar.bz2'])
 
 FORMAT_INPUT_AS_YAML_OR_DICT = 'formatted as YAML or as "key1=value1;key2=value2"'

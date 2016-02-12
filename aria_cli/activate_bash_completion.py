@@ -13,10 +13,10 @@
 #    under the License.
 
 import sys
+import getpass
 import platform
 import subprocess
 
-from getpass import getuser
 from sys import executable
 from os import path
 
@@ -32,7 +32,7 @@ def main():
         sys.exit('failed to retrieve os distribution')
 
     if distro in ('Ubuntu', 'debian'):
-        user = getuser()
+        user = getpass.getuser()
         home = path.expanduser("~")
         intd = path.dirname(executable)
 

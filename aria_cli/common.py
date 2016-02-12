@@ -15,11 +15,7 @@
 import os
 import tempfile
 
-from cloudify.utils import LocalCommandRunner
-from cloudify.workflows import local
-
-from dsl_parser import constants as dsl_constants
-from dsl_parser import parser
+from aria_cli.dependencies import futures
 
 from aria_cli import constants
 from aria_cli import exceptions
@@ -40,7 +36,7 @@ def initialize_blueprint(blueprint_path,
         )
     provider_context = utils.CloudifyConfig().local_provider_context
     inputs = utils.inputs_to_dict(inputs, 'inputs')
-    return local.init_env(
+    return futures.aria_local.init_env(
         blueprint_path=blueprint_path,
         name=name,
         inputs=inputs,
@@ -63,7 +59,8 @@ def install_blueprint_plugins(blueprint_path):
                 'You must be running inside a '
                 'virtualenv to install blueprint plugins')
 
-        runner = LocalCommandRunner(logger.get_logger())
+        runner = futures.aria_side_utils.LocalCommandRunner(
+            logger.get_logger())
         # dump the requirements to a file
         # and let pip install it.
         # this will utilize pip's mechanism
@@ -78,13 +75,13 @@ def install_blueprint_plugins(blueprint_path):
 
 def create_requirements(blueprint_path):
 
-    parsed_dsl = parser.parse_from_path(
+    parsed_dsl = futures.aria_dsl_parser.parse_from_path(
         dsl_file_path=blueprint_path)
 
     requirements = _plugins_to_requirements(
         blueprint_path=blueprint_path,
         plugins=parsed_dsl[
-            dsl_constants.DEPLOYMENT_PLUGINS_TO_INSTALL
+            futures.aria_dsl_constants.DEPLOYMENT_PLUGINS_TO_INSTALL
         ]
     )
 
@@ -103,9 +100,9 @@ def _plugins_to_requirements(blueprint_path, plugins):
 
     sources = set()
     for plugin in plugins:
-        if plugin[dsl_constants.PLUGIN_INSTALL_KEY]:
+        if plugin[futures.aria_dsl_constants.PLUGIN_INSTALL_KEY]:
             source = plugin[
-                dsl_constants.PLUGIN_SOURCE_KEY
+                futures.aria_dsl_constants.PLUGIN_SOURCE_KEY
             ]
             if '://' in source:
                 # URL

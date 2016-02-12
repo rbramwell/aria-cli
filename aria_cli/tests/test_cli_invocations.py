@@ -16,15 +16,15 @@ import argparse
 import json
 import tempfile
 import unittest
-import cli_runner
 
 from nose.tools import nottest
 
 from itertools import combinations
 from mock import create_autospec
+
 from aria_cli import utils
 from aria_cli import commands
-
+from aria_cli.tests import cli_runner
 
 TEMP_FILE = tempfile.NamedTemporaryFile()
 

@@ -17,11 +17,10 @@ Tests all commands that start with 'aria blueprints'
 """
 
 from aria_cli.tests import cli_runner
-from aria_cli.tests.commands.test_cli_command import CliCommandTest
-from aria_cli.tests.commands.test_cli_command import BLUEPRINTS_DIR
+from aria_cli.tests.commands import test_cli_command
 
 
-class BlueprintsTest(CliCommandTest):
+class BlueprintsTest(test_cli_command.CliCommandTest):
 
     def setUp(self):
         super(BlueprintsTest, self).setUp()
@@ -30,10 +29,10 @@ class BlueprintsTest(CliCommandTest):
     def test_blueprint_validate(self):
         cli_runner.run_cli('aria validate '
                            '-p {0}/helloworld/blueprint.yaml'
-                           .format(BLUEPRINTS_DIR))
+                           .format(test_cli_command.BLUEPRINTS_DIR))
 
     def test_validate_bad_blueprint(self):
         self._assert_ex('aria validate '
                         '-p {0}/bad_blueprint/blueprint.yaml'
-                        .format(BLUEPRINTS_DIR),
+                        .format(test_cli_command.BLUEPRINTS_DIR),
                         'Failed to validate blueprint')

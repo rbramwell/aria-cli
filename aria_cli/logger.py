@@ -18,9 +18,9 @@ import logging.config
 import os
 import copy
 
-from cloudify import logs
-from aria_cli.config import logger_config
 
+from aria_cli.config import logger_config
+from aria_cli.dependencies import futures
 
 _lgr = None
 
@@ -125,7 +125,8 @@ def get_events_logger():
         :return:
         """
         for event in events:
-            _lgr.info(logs.create_event_message_prefix(event))
+            _lgr.info(futures.aria_side_logs.
+                      create_event_message_prefix(event))
 
     # currently needs to be imported dynamically since
     # otherwise it creates a circular import.

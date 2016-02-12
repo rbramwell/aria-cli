@@ -21,16 +21,8 @@ import json
 import tempfile
 
 
-from cloudify import ctx as op_ctx
-from cloudify.decorators import operation
-from cloudify.decorators import workflow
-
-from cloudify import exceptions as cfy_exceptions
-from cloudify.workflows import ctx as workflow_ctx
-from dsl_parser.constants import HOST_TYPE
-
 from aria_cli import common
-
+from aria_cli.dependencies import futures
 from aria_cli.tests import cli_runner
 from aria_cli.tests.commands import test_cli_command
 
@@ -207,8 +199,8 @@ class LocalTest(test_cli_command.CliCommandTest):
             self.assertIn(requirement, output)
 
     def test_install_agent(self):
-        blueprint_path = '{0}/local/install-agent-blueprint.yaml' \
-            .format(test_cli_command.BLUEPRINTS_DIR)
+        blueprint_path = '{0}/local/install-agent-blueprint.yaml'.format(
+            test_cli_command.BLUEPRINTS_DIR)
         try:
             cli_runner.run_cli('aria init -p {0}'.format(blueprint_path))
             self.fail('ValueError was expected')
@@ -217,8 +209,9 @@ class LocalTest(test_cli_command.CliCommandTest):
                           "(it is True by default) "
                           "when executing local workflows. "
                           "The 'install_agent' property must be set to false "
-                          "for each node of type {0}.".format(HOST_TYPE),
-                          e.message)
+                          "for each node of type {0}."
+                          .format(futures.aria_dsl_constants.
+                                  HOST_TYPE), e.message)
 
     def test_install_plugins(self):
 
@@ -227,7 +220,7 @@ class LocalTest(test_cli_command.CliCommandTest):
         try:
             cli_runner.run_cli('aria install-plugins -p {0}'
                                .format(blueprint_path))
-        except cfy_exceptions.CommandExecutionException as e:
+        except futures.aria_aside_exceptions.CommandExecutionException as e:
             # Expected pip install to start
             self.assertIn('pip install -r ',
                           e.message)
@@ -273,17 +266,17 @@ class LocalTest(test_cli_command.CliCommandTest):
                                .format(workflow_name))
 
 
-@operation
+@futures.aria_operation
 def mock_op(param, custom_param=None, **kwargs):
-    props = op_ctx.instance.runtime_properties
+    props = futures.aria_ctx.instance.runtime_properties
     props['param'] = param
     props['custom_param'] = custom_param
-    props['provider_context'] = op_ctx.provider_context
+    props['provider_context'] = futures.aria_ctx.provider_context
 
 
-@workflow
+@futures.aria_workflow
 def mock_workflow(param, custom_param=None, **kwargs):
-    for node in workflow_ctx.nodes:
+    for node in futures.aria_workflow_ctx.nodes:
         for instance in node.instances:
             instance.execute_operation('test.op', kwargs={
                 'param': param,

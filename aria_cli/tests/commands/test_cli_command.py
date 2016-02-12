@@ -18,33 +18,32 @@ import shutil
 import unittest
 from mock import patch
 
-from cloudify.utils import setup_logger
-
 
 from aria_cli import exceptions
-from aria_cli.tests import cli_runner
 from aria_cli import utils
-from aria_cli.utils import DEFAULT_LOG_FILE
-
+from aria_cli.dependencies import futures
+from aria_cli.tests import cli_runner
 
 TEST_DIR = '/tmp/aria-cli-component-tests'
 TEST_WORK_DIR = TEST_DIR + "/aria"
 THIS_DIR = os.path.dirname(os.path.dirname(__file__))
-BLUEPRINTS_DIR = os.path.join(THIS_DIR, 'resources', 'blueprints')
+BLUEPRINTS_DIR = os.path.join(
+    THIS_DIR, 'resources', 'blueprints')
 
 
 class CliCommandTest(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
-        cls.logger = setup_logger('CliCommandTest')
+        cls.logger = futures.aria_side_utils.setup_logger(
+            'CliCommandTest')
 
     @classmethod
     def tearDownClass(cls):
         shutil.rmtree(TEST_DIR)
 
     def setUp(self):
-        logdir = os.path.dirname(DEFAULT_LOG_FILE)
+        logdir = os.path.dirname(utils.DEFAULT_LOG_FILE)
 
         # create log folder
         if not os.path.exists(logdir):
@@ -66,8 +65,8 @@ class CliCommandTest(unittest.TestCase):
         os.getcwd = self.original_utils_os_getcwd = os.getcwd
 
         # empty log file
-        if os.path.exists(DEFAULT_LOG_FILE):
-            with open(DEFAULT_LOG_FILE, 'w') as f:
+        if os.path.exists(utils.DEFAULT_LOG_FILE):
+            with open(utils.DEFAULT_LOG_FILE, 'w') as f:
                 f.write('')
 
         # delete test working directory
