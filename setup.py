@@ -17,7 +17,7 @@ from setuptools import setup
 
 setup(
     name='aria-tosca',
-    version='0.5',
+    version='0.6',
     author='Aria-TOSCA',
     author_email='Aria-TOSCA@aria.io',
     packages=['aria_cli',
@@ -38,8 +38,8 @@ setup(
         ]
     },
     install_requires=[
-        'aria-plugins-common==0.1',
-        'aria-dsl-parser==0.2',
+        'aria-plugins-common==0.3',
+        'aria-dsl-parser==0.3',
         'pyyaml==3.10',
         'argcomplete==0.7.1',
         'jinja2==2.7.2',
