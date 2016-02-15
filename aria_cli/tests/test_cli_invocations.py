@@ -13,18 +13,19 @@
 #    under the License.
 
 import argparse
+import itertools
 import json
+import mock
 import tempfile
 import unittest
 
-from nose.tools import nottest
+from nose import tools
 
-from itertools import combinations
-from mock import create_autospec
+from aria_core import utils
 
-from aria_cli import utils
 from aria_cli import commands
 from aria_cli.tests import cli_runner
+
 
 TEMP_FILE = tempfile.NamedTemporaryFile()
 
@@ -80,7 +81,7 @@ def get_combinations(command_path):
 
     all_commands = []
     for i in range(0, len(optional_args) + 1):
-        combs = set(combinations(optional_args, i))
+        combs = set(itertools.combinations(optional_args, i))
         for combination in combs:
             command = '{0} {1} {2}'.format(
                 command_path,
@@ -132,34 +133,35 @@ class CliInvocationTest(unittest.TestCase):
         utils.get_management_server_ip = lambda x: 'localhost'
 
         # blueprint commands
-        cls.original_blueprints_validate = commands.blueprints.validate
-        commands.local.validate = create_autospec(
+        cls.original_blueprints_validate = commands.local.validate
+        commands.local.validate = mock.create_autospec(
             commands.local.validate, return_value=None
         )
 
         # local commands
         cls.original_local_init = commands.local.init
-        commands.local.init = create_autospec(
+        commands.local.init = mock.create_autospec(
             commands.local.init, return_value=None
         )
         cls.original_local_execute = commands.local.execute
-        commands.local.execute = create_autospec(
+        commands.local.execute = mock.create_autospec(
             commands.local.execute, return_value=None
         )
         cls.original_local_outputs = commands.local.outputs
-        commands.local.outputs = create_autospec(
+        commands.local.outputs = mock.create_autospec(
             commands.local.outputs, return_value=None
         )
         cls.original_local_instances = commands.local.instances
-        commands.local.instances = create_autospec(
+        commands.local.instances = mock.create_autospec(
             commands.local.instances, return_value=None
         )
         cls.original_local_install_plugins = commands.local.install_plugins
-        commands.local.install_plugins = create_autospec(
+        commands.local.install_plugins = mock.create_autospec(
             commands.local.install_plugins, return_value=None
         )
-        cls.original_local_create_requirements = commands.local.create_requirements  # NOQA
-        commands.local.create_requirements = create_autospec(
+        cls.original_local_create_requirements = (
+            commands.local.create_requirements)
+        commands.local.create_requirements = mock.create_autospec(
             commands.local.create_requirements, return_value=None
         )
 
@@ -168,7 +170,7 @@ class CliInvocationTest(unittest.TestCase):
         for command in possible_commands:
             cli_runner.run_cli('aria {0}'.format(command))
 
-    @nottest
+    @tools.nottest
     # excluded these tests since the number of possible parameters
     # combinations has grown too large. need to change these tests so that
     # they'll be linear and not exponential in the number of optional
@@ -185,7 +187,7 @@ class CliInvocationTest(unittest.TestCase):
             for possible_command in possible_commands:
                 cli_runner.run_cli('aria {0}'.format(possible_command))
 
-    @nottest
+    @tools.nottest
     def test_all_commands_help(self):
 
         """
@@ -201,7 +203,7 @@ class CliInvocationTest(unittest.TestCase):
                 'aria {0} --help'.format(command)
             )
 
-    @nottest
+    @tools.nottest
     def test_all_commands_verbose(self):
 
         """

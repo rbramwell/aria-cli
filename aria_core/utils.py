@@ -17,25 +17,17 @@ import json
 import os
 import pkgutil
 import sys
-import tempfile
-import getpass
 import yaml
 import pkg_resources
 
-
 from jinja2 import environment
 
-
 import aria_cli
-
-from aria_cli import constants
 from aria_cli import exceptions
-from aria_cli.dependencies import futures
 
-DEFAULT_LOG_FILE = os.path.expanduser(
-    '{0}/aria-{1}/aria-cli.log'
-    .format(tempfile.gettempdir(),
-            getpass.getuser()))
+from aria_core import constants
+from aria_core import logger_config
+from aria_core.dependencies import futures
 
 
 def dump_to_file(collection, file_path):
@@ -110,11 +102,11 @@ def inputs_to_dict(resource, resource_name):
     if isinstance(parsed_dict, dict):
         return parsed_dict
     else:
-        msg = "Invalid input: {0}. {1} must represent a dictionary. Valid " \
-              "values can either be a path to a YAML file, a string " \
-              "formatted as YAML or a string formatted as " \
-              "key1=value1;key2=value2" \
-            .format(resource, resource_name)
+        msg = (("Invalid input: {0}. {1} must represent a dictionary. Valid "
+                "values can either be a path to a YAML file, a string "
+                "formatted as YAML or a string formatted as "
+                "key1=value1;key2=value2")
+                .format(resource, resource_name))
         raise exceptions.AriaCliError(msg)
 
 
@@ -172,7 +164,8 @@ def dump_configuration_file():
         'resources/config.yaml')
 
     template = environment.Template(config)
-    rendered = template.render(log_path=DEFAULT_LOG_FILE)
+    rendered = template.render(
+        log_path=logger_config.DEFAULT_LOG_FILE)
     target_config_path = get_configuration_path()
     with open(os.path.join(target_config_path), 'w') as f:
         f.write(rendered)
@@ -205,7 +198,7 @@ def get_import_resolver():
     if not is_initialized():
         return None
 
-    config = CloudifyConfig()
+    config = logger_config.AriaConfig()
     # get the resolver configuration from the config file
     local_import_resolver = config.local_import_resolver
     return futures.aria_dsl_utils.create_import_resolver(
@@ -266,30 +259,7 @@ class AriaWorkingDirectorySettings(yaml.YAMLObject):
     yaml_loader = yaml.Loader
 
     def __init__(self):
-        self._management_ip = None
-        self._management_key = None
-        self._management_user = None
         self._provider_context = None
-        self._rest_port = constants.DEFAULT_REST_PORT
-        self._protocol = constants.DEFAULT_PROTOCOL
-
-    def get_management_server(self):
-        return self._management_ip
-
-    def set_management_server(self, management_ip):
-        self._management_ip = management_ip
-
-    def get_management_key(self):
-        return self._management_key
-
-    def set_management_key(self, management_key):
-        self._management_key = management_key
-
-    def get_management_user(self):
-        return self._management_user
-
-    def set_management_user(self, _management_user):
-        self._management_user = _management_user
 
     def get_provider_context(self):
         return self._provider_context
@@ -297,56 +267,10 @@ class AriaWorkingDirectorySettings(yaml.YAMLObject):
     def set_provider_context(self, provider_context):
         self._provider_context = provider_context
 
-    def remove_management_server_context(self):
-        self._management_ip = None
 
-    def get_rest_port(self):
-        return self._rest_port
-
-    def set_rest_port(self, rest_port):
-        self._rest_port = rest_port
-
-    def get_protocol(self):
-        return self._protocol
-
-    def set_protocol(self, protocol):
-        self._protocol = protocol
-
-
-def delete_cloudify_working_dir_settings():
+def delete_aria_working_dir_settings():
     target_file_path = os.path.join(
         get_cwd(), constants.ARIA_WD_SETTINGS_DIRECTORY_NAME,
         constants.ARIA_WD_SETTINGS_FILE_NAME)
     if os.path.exists(target_file_path):
         os.remove(target_file_path)
-
-
-class CloudifyConfig(object):
-    class Logging(object):
-        def __init__(self, logging):
-            self._logging = logging or {}
-
-        @property
-        def filename(self):
-            return self._logging.get('filename')
-
-        @property
-        def loggers(self):
-            return self._logging.get('loggers', {})
-
-    def __init__(self):
-        with open(get_configuration_path()) as f:
-            self._config = yaml.safe_load(f.read())
-
-    @property
-    def logging(self):
-        return self.Logging(self._config.get('logging', {}))
-
-    @property
-    def local_provider_context(self):
-        return self._config.get('local_provider_context', {})
-
-    @property
-    def local_import_resolver(self):
-        return self._config.get(
-            futures.aria_dsl_constants.IMPORT_RESOLVER_KEY, {})

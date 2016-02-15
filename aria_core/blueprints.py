@@ -12,25 +12,18 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
-from aria_cli.dependencies import futures
+from aria_core import logger
+from aria_core.dependencies import futures
 
-ARIA_WD_SETTINGS_FILE_NAME = 'context'
-ARIA_WD_SETTINGS_DIRECTORY_NAME = '.aria'
-CONFIG_FILE_NAME = 'aria-config.yaml'
-DEFAULTS_CONFIG_FILE_NAME = 'aria-config.defaults.yaml'
+LOG = logger.logging.getLogger(__name__)
 
-WORKFLOW_TASK_RETRIES = -1
-WORKFLOW_TASK_RETRY_INTERVAL = 30
 
-POLICY_ENGINE_START_TIMEOUT = 30
-
-DEFAULT_REST_PORT = 80
-SECURED_REST_PORT = 443
-DEFAULT_PROTOCOL = 'http'
-SECURED_PROTOCOL = 'https'
-
-IGNORED_LOCAL_WORKFLOW_MODULES = futures.IGNORED_LOCAL_WORKFLOW_MODULES
-
-BASIC_AUTH_PREFIX = 'Basic'
-
-API_VERSION = 'v2'
+def validate(blueprint_path):
+    try:
+        return futures.aria_dsl_parser.parse_from_path(
+            str(blueprint_path)
+            if not isinstance(blueprint_path, file)
+            else blueprint_path.name)
+    except futures.aria_dsl_exceptions.DSLParsingException as e:
+        LOG.error(str(e))
+        raise Exception("Failed to validate blueprint. %s", str(e))

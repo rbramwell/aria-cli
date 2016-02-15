@@ -21,9 +21,6 @@ from sys import executable
 from os import path
 
 
-__author__ = 'nir'
-
-
 def main():
     try:
         distro = platform.dist()[0]

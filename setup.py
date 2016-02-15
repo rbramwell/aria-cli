@@ -21,6 +21,7 @@ setup(
     author='Aria-TOSCA',
     author_email='Aria-TOSCA@aria.io',
     packages=['aria_cli',
+              'aria_core',
               'aria_cli.commands',
               'aria_cli.config'],
     package_data={

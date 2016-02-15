@@ -20,9 +20,11 @@ from mock import patch
 
 
 from aria_cli import exceptions
-from aria_cli import utils
-from aria_cli.dependencies import futures
 from aria_cli.tests import cli_runner
+
+from aria_core import utils
+from aria_core import logger_config
+from aria_core.dependencies import futures
 
 TEST_DIR = '/tmp/aria-cli-component-tests'
 TEST_WORK_DIR = TEST_DIR + "/aria"
@@ -43,7 +45,8 @@ class CliCommandTest(unittest.TestCase):
         shutil.rmtree(TEST_DIR)
 
     def setUp(self):
-        logdir = os.path.dirname(utils.DEFAULT_LOG_FILE)
+        logdir = os.path.dirname(
+            logger_config.DEFAULT_LOG_FILE)
 
         # create log folder
         if not os.path.exists(logdir):
@@ -53,20 +56,20 @@ class CliCommandTest(unittest.TestCase):
         if not os.path.exists(TEST_WORK_DIR):
             os.makedirs(TEST_WORK_DIR)
 
-        self.original_utils_get_cwd = utils.get_cwd
-        utils.get_cwd = lambda: TEST_WORK_DIR
+        self.original_utils_get_cwd = os.getcwd
+        os.getcwd = lambda: TEST_WORK_DIR
         self.original_utils_os_getcwd = os.getcwd
         os.getcwd = lambda: TEST_WORK_DIR
 
     def tearDown(self):
 
         # remove mocks
-        utils.get_cwd = self.original_utils_get_cwd = utils.get_cwd
+        os.getcwd = self.original_utils_get_cwd = os.getcwd
         os.getcwd = self.original_utils_os_getcwd = os.getcwd
 
         # empty log file
-        if os.path.exists(utils.DEFAULT_LOG_FILE):
-            with open(utils.DEFAULT_LOG_FILE, 'w') as f:
+        if os.path.exists(logger_config.DEFAULT_LOG_FILE):
+            with open(logger_config.DEFAULT_LOG_FILE, 'w') as f:
                 f.write('')
 
         # delete test working directory
@@ -115,8 +118,7 @@ class CliCommandTest(unittest.TestCase):
 
     def _create_cosmo_wd_settings(self, settings=None):
         directory_settings = utils.AriaWorkingDirectorySettings()
-        directory_settings.set_management_server('localhost')
-        utils.delete_cloudify_working_dir_settings()
+        utils.delete_aria_working_dir_settings()
         utils.dump_aria_working_dir_settings(
             settings or directory_settings, update=False)
         utils.dump_configuration_file()

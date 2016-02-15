@@ -22,9 +22,10 @@ import tempfile
 
 
 from aria_cli import common
-from aria_cli.dependencies import futures
 from aria_cli.tests import cli_runner
 from aria_cli.tests.commands import test_cli_command
+
+from aria_core.dependencies import futures
 
 
 class LocalTest(test_cli_command.CliCommandTest):

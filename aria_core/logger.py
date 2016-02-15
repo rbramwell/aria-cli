@@ -19,62 +19,64 @@ import os
 import copy
 
 
-from aria_cli.config import logger_config
-from aria_cli.dependencies import futures
+from aria_core.dependencies import futures
 
 _lgr = None
 
 _all_loggers = set()
 
 
-def get_logger():
-    return _lgr
+def get_logger(name=__name__):
+    return configure_loggers(name=name)
 
 
 def all_loggers():
     return _all_loggers
 
 
-def configure_loggers():
+def configure_loggers(name=None):
     # first off, configure defaults
     # to enable the use of the logger
     # even before the init was executed.
-    _configure_defaults()
+    _name = name if name else __name__
+    _configure_defaults(name=_name)
 
-    from aria_cli import utils
+    from aria_core import utils
     if utils.is_initialized():
         # init was already called
         # use the configuration file.
         _configure_from_file()
 
-    global _lgr
-    _lgr = logging.getLogger('aria_cli.cli.main')
+    return logging.getLogger(name=name if name else __name__)
 
 
-def _configure_defaults():
+def _configure_defaults(name=None):
 
     # add handlers to the main logger
+    from aria_core import logger_config
     logger_dict = copy.deepcopy(logger_config.LOGGER)
     logger_dict['loggers'] = {
-        'aria_cli.cli.main': {
+        name: {
             'handlers': list(logger_dict['handlers'].keys())
         }
     }
-    from aria_cli import utils
-    logger_dict['handlers']['file']['filename'] = utils.DEFAULT_LOG_FILE
-    logfile_dir = os.path.dirname(utils.DEFAULT_LOG_FILE)
+    from aria_core import logger_config
+    logger_dict['handlers']['file'][
+        'filename'] = logger_config.DEFAULT_LOG_FILE
+    logfile_dir = os.path.dirname(
+        logger_config.DEFAULT_LOG_FILE)
     if not os.path.exists(logfile_dir):
         os.makedirs(logfile_dir)
 
     logging.config.dictConfig(logger_dict)
-    logging.getLogger('aria_cli.cli.main').setLevel(logging.INFO)
-    _all_loggers.add('aria_cli.cli.main')
+    logging.getLogger(name).setLevel(logging.INFO)
+    _all_loggers.add(name)
 
 
 def _configure_from_file():
 
-    from aria_cli import utils
-    config = utils.CloudifyConfig()
+    from aria_core import logger_config
+    config = logger_config.AriaConfig()
     logging_config = config.logging
     loggers_config = logging_config.loggers
     logfile = logging_config.filename

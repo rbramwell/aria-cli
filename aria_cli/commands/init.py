@@ -19,15 +19,18 @@ Handles 'aria init'
 import os
 import shutil
 
-from aria_cli import utils
-from aria_cli import constants
+
 from aria_cli import exceptions
-from aria_cli import logger
+
+
+from aria_core import constants
+from aria_core import logger
+from aria_core import utils
 
 
 def init(reset_config, skip_logging=False):
     if os.path.exists(os.path.join(
-            utils.get_cwd(),
+            os.getcwd(),
             constants.ARIA_WD_SETTINGS_DIRECTORY_NAME,
             constants.ARIA_WD_SETTINGS_FILE_NAME)):
         if not reset_config:
@@ -42,12 +45,12 @@ def init(reset_config, skip_logging=False):
             raise error
         else:
             shutil.rmtree(os.path.join(
-                utils.get_cwd(),
+                os.getcwd(),
                 constants.ARIA_WD_SETTINGS_DIRECTORY_NAME))
 
     settings = utils.AriaWorkingDirectorySettings()
     utils.dump_aria_working_dir_settings(settings)
     utils.dump_configuration_file()
-    logger.configure_loggers()
+    logger.configure_loggers('aria_cli.cli.main')
     if not skip_logging:
         logger.get_logger().info('Initialization completed successfully')

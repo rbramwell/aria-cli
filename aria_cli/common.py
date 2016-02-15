@@ -15,13 +15,15 @@
 import os
 import tempfile
 
-from aria_cli.dependencies import futures
-
-from aria_cli import constants
 from aria_cli import exceptions
-from aria_cli import logger
 
-from aria_cli import utils
+from aria_core import constants
+from aria_core import logger
+from aria_core import logger_config
+from aria_core import utils
+from aria_core.dependencies import futures
+
+LOG = logger.get_logger('aria_cli.cli.main')
 
 
 def initialize_blueprint(blueprint_path,
@@ -34,7 +36,8 @@ def initialize_blueprint(blueprint_path,
         install_blueprint_plugins(
             blueprint_path=blueprint_path
         )
-    provider_context = utils.CloudifyConfig().local_provider_context
+    provider_context = (
+        logger_config.AriaConfig().local_provider_context)
     inputs = utils.inputs_to_dict(inputs, 'inputs')
     return futures.aria_local.init_env(
         blueprint_path=blueprint_path,
@@ -59,8 +62,7 @@ def install_blueprint_plugins(blueprint_path):
                 'You must be running inside a '
                 'virtualenv to install blueprint plugins')
 
-        runner = futures.aria_side_utils.LocalCommandRunner(
-            logger.get_logger())
+        runner = futures.aria_side_utils.LocalCommandRunner(LOG)
         # dump the requirements to a file
         # and let pip install it.
         # this will utilize pip's mechanism
@@ -70,7 +72,7 @@ def install_blueprint_plugins(blueprint_path):
         runner.run(command='pip install -r {0}'.format(tmp_path),
                    stdout_pipe=False)
     else:
-        logger.get_logger().debug('There are no plugins to install..')
+        LOG.debug('There are no plugins to install.')
 
 
 def create_requirements(blueprint_path):

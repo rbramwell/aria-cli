@@ -20,7 +20,7 @@ import argparse
 
 from StringIO import StringIO
 
-from aria_cli import utils
+from aria_core import utils
 
 
 class VersionAction(argparse.Action):
