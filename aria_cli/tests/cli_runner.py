@@ -16,11 +16,12 @@ import os
 import sys
 
 from aria_cli import cli
-from aria_cli import utils
-from aria_cli.dependencies import futures
+
+from aria_core import logger_config
+from aria_core import logger
 
 
-runner_lgr = futures.aria_side_utils.setup_logger('cli_runner')
+LOG = logger.get_logger(__name__)
 
 
 def run_cli_expect_system_exit_0(command):
@@ -42,13 +43,13 @@ def run_cli_expect_system_exit_code(command, expected_code):
 
 
 def run_cli(command):
-    runner_lgr.info(command)
+    LOG.info(command)
     sys.argv = command.split()
     cli.main()
 
     # Return the content of the log file
     # this enables making assertions on the output
-    if os.path.exists(utils.DEFAULT_LOG_FILE):
-        with open(utils.DEFAULT_LOG_FILE, 'r') as f:
+    if os.path.exists(logger_config.DEFAULT_LOG_FILE):
+        with open(logger_config.DEFAULT_LOG_FILE, 'r') as f:
             return f.read()
     return ''

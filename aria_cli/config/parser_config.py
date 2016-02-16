@@ -15,11 +15,12 @@
 # flake8: noqa
 
 import argparse
+from argcomplete import completers
 
 from aria_cli import commands as aria
 from aria_cli.config import argument_utils
 
-from argcomplete import completers
+
 
 yaml_files_completer = completers.FilesCompleter(['*.yml', '*.yaml'])
 archive_files_completer = completers.FilesCompleter(

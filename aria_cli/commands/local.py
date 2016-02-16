@@ -23,25 +23,22 @@ import os
 
 from aria_cli import exceptions
 from aria_cli import common
-from aria_cli import logger
-from aria_cli import utils
+
 from aria_cli.commands import init as aria
-from aria_cli.dependencies import futures
+
+from aria_core import blueprints
+from aria_core import utils
+from aria_core import logger
+from aria_core import workflows
+from aria_core.dependencies import futures
 
 _NAME = 'local'
 _STORAGE_DIR_NAME = 'local-storage'
+LOG = logger.get_logger('aria_cli.cli.main')
 
 
 def validate(blueprint_path=None):
-    try:
-        return futures.aria_dsl_parser.parse_from_path(
-            str(blueprint_path)
-            if not isinstance(blueprint_path, file)
-            else blueprint_path.name)
-    except futures.aria_dsl_exceptions.DSLParsingException as e:
-        _logger = logger.get_logger()
-        _logger.error(str(e))
-        raise Exception("Failed to validate blueprint. %s", str(e))
+    return blueprints.validate(blueprint_path)
 
 
 def init(blueprint_path,
@@ -70,7 +67,7 @@ def init(blueprint_path,
         ]
         raise
 
-    logger.get_logger().info(
+    LOG.info(
         "Initiated {0}\nIf you make changes to the "
         "blueprint, "
         "Run 'aria init -p {0}' "
@@ -84,24 +81,24 @@ def execute(workflow_id,
             task_retries,
             task_retry_interval,
             task_thread_pool_size):
-    _logger = logger.get_logger()
     parameters = utils.inputs_to_dict(parameters, 'parameters')
-    env = _load_env()
-    result = env.execute(workflow=workflow_id,
-                         parameters=parameters,
-                         allow_custom_parameters=allow_custom_parameters,
-                         task_retries=task_retries,
-                         task_retry_interval=task_retry_interval,
-                         task_thread_pool_size=task_thread_pool_size)
-    if result is not None:
-        _logger.info(json.dumps(result,
-                                sort_keys=True,
-                                indent=2))
+    result = workflows.generic_execute(
+        workflow_id=workflow_id,
+        parameters=parameters,
+        allow_custom_parameters=allow_custom_parameters,
+        task_retries=task_retries,
+        task_retry_interval=task_retry_interval,
+        task_thread_pool_size=task_thread_pool_size,
+        environment=_load_env())
+    if result:
+        LOG.info(json.dumps(result,
+                            sort_keys=True,
+                            indent=2))
 
 
 def outputs():
     env = _load_env()
-    logger.get_logger().info(
+    LOG.info(
         json.dumps(env.outputs() or {},
                    sort_keys=True,
                    indent=2))
@@ -116,7 +113,7 @@ def instances(node_id):
         if not node_instances:
             raise exceptions.AriaCliError('No node with id: {0}'
                                           .format(node_id))
-    logger.get_logger().info(
+    LOG.info(
         json.dumps(node_instances,
                    sort_keys=True,
                    indent=2))
@@ -138,7 +135,7 @@ def create_requirements(blueprint_path, output):
 
     if output:
         utils.dump_to_file(requirements, output)
-        logger.get_logger().info(
+        LOG.info(
             'Requirements created successfully --> {0}'
             .format(output))
     else:
@@ -148,7 +145,7 @@ def create_requirements(blueprint_path, output):
         # output directly to pip
         for requirement in requirements:
             print(requirement)
-            logger.get_logger().info(requirement)
+            LOG.info(requirement)
 
 
 def _storage_dir():

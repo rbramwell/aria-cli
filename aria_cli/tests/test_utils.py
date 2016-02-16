@@ -17,10 +17,11 @@ import os
 import shutil
 import unittest
 
-from aria_cli import utils
-from aria_cli import constants
+
 from aria_cli import exceptions
 
+from aria_core import utils
+from aria_core import constants
 
 TEST_DIR = '/tmp/aria-cli-unit-tests'
 TEST_WORK_DIR = TEST_DIR + '/aria'
