@@ -17,10 +17,21 @@ Handles 'aria --version'
 """
 
 import argparse
+import json
+import pkgutil
 
 from StringIO import StringIO
 
-from aria_core import utils
+
+def get_version_data():
+    return json.loads(
+        pkgutil.get_data(
+            'aria_cli',
+            'VERSION'))
+
+
+def get_version():
+    return get_version_data()['version']
 
 
 class VersionAction(argparse.Action):
@@ -52,7 +63,7 @@ class VersionAction(argparse.Action):
         return output.getvalue()
 
     def __call__(self, parser, namespace, values, option_string=None):
-        cli_version_data = utils.get_version_data()
+        cli_version_data = get_version_data()
         cli_version = self._format_version_data(
             cli_version_data,
             prefix='ARIA CLI ',

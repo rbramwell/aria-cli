@@ -244,16 +244,6 @@ def decode_dict(data):
     return rv
 
 
-def get_version():
-    version_data = get_version_data()
-    return version_data['version']
-
-
-def get_version_data():
-    data = pkgutil.get_data('aria_cli', 'VERSION')
-    return json.loads(data)
-
-
 class AriaWorkingDirectorySettings(yaml.YAMLObject):
     yaml_tag = u'!WD_Settings'
     yaml_loader = yaml.Loader

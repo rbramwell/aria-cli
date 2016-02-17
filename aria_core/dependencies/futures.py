@@ -17,7 +17,6 @@
 
 from cloudify import exceptions as aria_aside_exceptions
 from cloudify import ctx as aria_ctx
-from cloudify import logs as aria_side_logs
 from cloudify import utils as aria_side_utils
 
 from cloudify.decorators import operation as aria_operation
