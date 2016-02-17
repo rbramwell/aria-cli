@@ -17,7 +17,7 @@ from setuptools import setup
 
 setup(
     name='aria-tosca',
-    version='0.6',
+    version='0.6.1',
     author='Aria-TOSCA',
     author_email='Aria-TOSCA@aria.io',
     packages=['aria_cli',
