@@ -17,7 +17,7 @@ Aria CLI Exceptions
 """
 
 
-class AriaCliError(Exception):
+class AriaError(Exception):
     pass
 
 
@@ -25,7 +25,7 @@ class AriaValidationError(Exception):
     pass
 
 
-class SuppressedAriaCliError(Exception):
+class SuppressedAriaError(Exception):
     pass
 
 

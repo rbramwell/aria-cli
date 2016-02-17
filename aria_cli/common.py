@@ -15,9 +15,8 @@
 import os
 import tempfile
 
-from aria_cli import exceptions
-
 from aria_core import constants
+from aria_core import exceptions
 from aria_core import logger
 from aria_core import logger_config
 from aria_core import utils
@@ -58,7 +57,7 @@ def install_blueprint_plugins(blueprint_path):
     if requirements:
         # validate we are inside a virtual env
         if not utils.is_virtual_env():
-            raise exceptions.AriaCliError(
+            raise exceptions.AriaError(
                 'You must be running inside a '
                 'virtualenv to install blueprint plugins')
 

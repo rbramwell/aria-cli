@@ -19,11 +19,8 @@ Handles 'aria init'
 import os
 import shutil
 
-
-from aria_cli import exceptions
-
-
 from aria_core import constants
+from aria_core import exceptions
 from aria_core import logger
 from aria_core import utils
 
@@ -35,7 +32,7 @@ def init(reset_config, skip_logging=False):
             constants.ARIA_WD_SETTINGS_FILE_NAME)):
         if not reset_config:
             msg = 'Current directory is already initialized'
-            error = exceptions.AriaCliError(msg)
+            error = exceptions.AriaError(msg)
             error.possible_solutions = [
                 "Run 'aria init -p [path-to-a-blueprint]' "
                 "to force re-initialization "

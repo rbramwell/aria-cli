@@ -21,12 +21,12 @@ import shutil
 import os
 
 
-from aria_cli import exceptions
 from aria_cli import common
 
 from aria_cli.commands import init as aria
 
 from aria_core import blueprints
+from aria_core import exceptions
 from aria_core import utils
 from aria_core import logger
 from aria_core import workflows
@@ -111,8 +111,8 @@ def instances(node_id):
         node_instances = [instance for instance in node_instances
                           if instance.node_id == node_id]
         if not node_instances:
-            raise exceptions.AriaCliError('No node with id: {0}'
-                                          .format(node_id))
+            raise exceptions.AriaError('No node with id: {0}'
+                                       .format(node_id))
     LOG.info(
         json.dumps(node_instances,
                    sort_keys=True,
@@ -126,8 +126,8 @@ def install_plugins(blueprint_path):
 
 def create_requirements(blueprint_path, output):
     if output and os.path.exists(output):
-        raise exceptions.AriaCliError('output path already exists : {0}'
-                                      .format(output))
+        raise exceptions.AriaError('output path already exists : {0}'
+                                   .format(output))
 
     requirements = common.create_requirements(
         blueprint_path=blueprint_path
@@ -158,7 +158,7 @@ def _storage():
 
 def _load_env():
     if not os.path.isdir(_storage_dir()):
-        error = exceptions.AriaCliError(
+        error = exceptions.AriaError(
             '{0} has not been initialized with a blueprint.'
             .format(utils.get_cwd()))
 
