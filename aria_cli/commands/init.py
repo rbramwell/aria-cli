@@ -34,7 +34,7 @@ def init(reset_config, skip_logging=False):
             msg = 'Current directory is already initialized'
             error = exceptions.AriaError(msg)
             error.possible_solutions = [
-                "Run 'aria init -p [path-to-a-blueprint]' "
+                "Run 'aria init -b [blueprint-id] -p [path-to-a-blueprint]' "
                 "to force re-initialization "
                 "(might overwrite existing "
                 "configuration files if exist)"

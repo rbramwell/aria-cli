@@ -17,8 +17,8 @@ ARIA's Command Line Interface.
 ## Usage
 
 * Write/Download a TOSCA blueprint - TBD
-* Initialze aria with TOSCA blueprint `aria init -p blueprint.yaml --install-plugins`
-* Install the blueprint locally `aria execute -w install`
+* Initialze aria with TOSCA blueprint `aria init -b blueprint-id -p blueprint.yaml --install-plugins`
+* Install the blueprint locally `aria execute -w install -b blueprint-id`
 
 ## Read more
 
