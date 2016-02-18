@@ -21,7 +21,7 @@ import json
 import tempfile
 
 
-from aria_cli import common
+from aria_processor import virtualenv_processor
 from aria_cli.tests import cli_runner
 from aria_cli.tests.commands import test_cli_command
 
@@ -69,7 +69,7 @@ class LocalTest(test_cli_command.CliCommandTest):
         self.assert_method_called(
             cli_command='aria init --install-plugins -p {0}'
                         .format(blueprint_path),
-            module=common,
+            module=virtualenv_processor,
             function_name='install_blueprint_plugins',
             kwargs={'blueprint_path': blueprint_path}
         )

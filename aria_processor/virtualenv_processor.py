@@ -12,7 +12,7 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
-import os
+
 import tempfile
 
 from aria_core import constants
@@ -21,6 +21,8 @@ from aria_core import logger
 from aria_core import logger_config
 from aria_core import utils
 from aria_core.dependencies import futures
+
+from aria_processor import blueprint_processor
 
 LOG = logger.get_logger('aria_cli.cli.main')
 
@@ -33,8 +35,7 @@ def initialize_blueprint(blueprint_path,
                          resolver=None):
     if install_plugins:
         install_blueprint_plugins(
-            blueprint_path=blueprint_path
-        )
+            blueprint_path=blueprint_path)
     provider_context = (
         logger_config.AriaConfig().local_provider_context)
     inputs = utils.inputs_to_dict(inputs, 'inputs')
@@ -48,9 +49,9 @@ def initialize_blueprint(blueprint_path,
         resolver=resolver)
 
 
-def install_blueprint_plugins(blueprint_path):
+def install_blueprint_plugins(blueprint_path, logger_instance=None):
 
-    requirements = create_requirements(
+    requirements = blueprint_processor.create_requirements(
         blueprint_path=blueprint_path
     )
 
@@ -72,47 +73,3 @@ def install_blueprint_plugins(blueprint_path):
                    stdout_pipe=False)
     else:
         LOG.debug('There are no plugins to install.')
-
-
-def create_requirements(blueprint_path):
-
-    parsed_dsl = futures.aria_dsl_parser.parse_from_path(
-        dsl_file_path=blueprint_path)
-
-    requirements = _plugins_to_requirements(
-        blueprint_path=blueprint_path,
-        plugins=parsed_dsl[
-            futures.aria_dsl_constants.DEPLOYMENT_PLUGINS_TO_INSTALL
-        ]
-    )
-
-    for node in parsed_dsl['nodes']:
-        requirements.update(
-            _plugins_to_requirements(
-                blueprint_path=blueprint_path,
-                plugins=node['plugins']
-            )
-        )
-
-    return requirements
-
-
-def _plugins_to_requirements(blueprint_path, plugins):
-
-    sources = set()
-    for plugin in plugins:
-        if plugin[futures.aria_dsl_constants.PLUGIN_INSTALL_KEY]:
-            source = plugin[
-                futures.aria_dsl_constants.PLUGIN_SOURCE_KEY
-            ]
-            if '://' in source:
-                # URL
-                sources.add(source)
-            else:
-                # Local plugin (should reside under the 'plugins' dir)
-                plugin_path = os.path.join(
-                    os.path.abspath(os.path.dirname(blueprint_path)),
-                    'plugins',
-                    source)
-                sources.add(plugin_path)
-    return sources

@@ -55,7 +55,7 @@ def raise_uninitialized():
         .format(constants.ARIA_WD_SETTINGS_DIRECTORY_NAME,
                 get_cwd()))
     error.possible_solutions = [
-        "Run 'cfy init' in this directory"
+        "Run 'aria init -p [blueprint-path]' in this directory"
     ]
     raise error
 

@@ -22,6 +22,7 @@ setup(
     author_email='Aria-TOSCA@aria.io',
     packages=['aria_cli',
               'aria_core',
+              'aria_processor',
               'aria_core.dependencies',
               'aria_cli.commands',
               'aria_cli.config'],
@@ -45,5 +46,6 @@ setup(
         'pyyaml==3.10',
         'argcomplete==0.7.1',
         'jinja2==2.7.2',
+        'virtualenv-api',
     ]
 )

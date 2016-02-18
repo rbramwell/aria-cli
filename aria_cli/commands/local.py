@@ -21,7 +21,8 @@ import shutil
 import os
 
 
-from aria_cli import common
+from aria_processor import virtualenv_processor
+from aria_processor import blueprint_processor
 
 from aria_cli.commands import init as aria
 
@@ -50,7 +51,7 @@ def init(blueprint_path,
     if not utils.is_initialized():
         aria.init(reset_config=False, skip_logging=True)
     try:
-        common.initialize_blueprint(
+        virtualenv_processor.initialize_blueprint(
             blueprint_path=blueprint_path,
             name=_NAME,
             inputs=inputs,
@@ -65,7 +66,7 @@ def init(blueprint_path,
             "Run 'aria install-plugins -p {0}'"
             .format(blueprint_path)
         ]
-        raise
+        raise e
 
     LOG.info(
         "Initiated {0}\nIf you make changes to the "
@@ -120,7 +121,7 @@ def instances(node_id):
 
 
 def install_plugins(blueprint_path):
-    common.install_blueprint_plugins(
+    virtualenv_processor.install_blueprint_plugins(
         blueprint_path=blueprint_path)
 
 
@@ -129,7 +130,7 @@ def create_requirements(blueprint_path, output):
         raise exceptions.AriaError('output path already exists : {0}'
                                    .format(output))
 
-    requirements = common.create_requirements(
+    requirements = blueprint_processor.create_requirements(
         blueprint_path=blueprint_path
     )
 
