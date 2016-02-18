@@ -102,8 +102,7 @@ def inputs_to_dict(resource, resource_name):
         msg = (("Invalid input: {0}. {1} must represent a dictionary. Valid "
                 "values can either be a path to a YAML file, a string "
                 "formatted as YAML or a string formatted as "
-                "key1=value1;key2=value2")
-                .format(resource, resource_name))
+                "key1=value1;key2=value2").format(resource, resource_name))
         raise exceptions.AriaError(msg)
 
 

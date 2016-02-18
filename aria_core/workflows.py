@@ -20,12 +20,13 @@ def generic_execute(workflow_id=None,
                     task_retry_interval=None,
                     task_thread_pool_size=None,
                     environment=None):
-    result = environment.execute(workflow=workflow_id,
-                                 parameters=parameters,
-                                 allow_custom_parameters=allow_custom_parameters,
-                                 task_retries=task_retries,
-                                 task_retry_interval=task_retry_interval,
-                                 task_thread_pool_size=task_thread_pool_size)
+    result = environment.execute(
+        workflow=workflow_id,
+        parameters=parameters,
+        allow_custom_parameters=allow_custom_parameters,
+        task_retries=task_retries,
+        task_retry_interval=task_retry_interval,
+        task_thread_pool_size=task_thread_pool_size)
     return result
 
 

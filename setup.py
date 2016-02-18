@@ -37,7 +37,6 @@ setup(
     entry_points={
         'console_scripts': [
             'aria = aria_cli.cli:main',
-            'activate_aria_bash_completion = aria_cli.activate_bash_completion:main'  # NOQA
         ]
     },
     install_requires=[
