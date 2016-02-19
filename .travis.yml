@@ -6,6 +6,8 @@ env:
   - TOX_ENV=docs
   - TOX_ENV=pep8
   - TOX_ENV=py27
+  - TOX_ENV=local-blueprint
+  - TOX_ENV=multicloud-blueprint
 
 install:
   - ssh-keygen -t rsa -N "" -f ~/.ssh/id_rsa
@@ -13,16 +15,10 @@ install:
   - chmod +x ~/.ssh/authorized_keys
   - echo -e "StrictHostKeyChecking no\n" >> ~/.ssh/conf
   - git clone --depth=50 --branch=master https://github.com/aria-tosca/aria-examples.git aria-examples
-
   - pip install tox
 
 script:
   - tox -e $TOX_ENV
-  - pip install -e .
-  - pip install aria-script-plugin
-
-  - aria init -b local-id -p aria-examples/local-blueprint.yaml --install-plugins
-  - aria init -b multicloud-id -p aria-examples/multicloud-blueprint.yaml -i aria-examples/inputs/multicloud.yaml.template --install-plugins
 
 deploy:
 
