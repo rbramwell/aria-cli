@@ -16,9 +16,33 @@ ARIA's Command Line Interface.
 
 ## Usage
 
-* Write/Download a TOSCA blueprint - TBD
-* Initialze aria with TOSCA blueprint `aria init -b blueprint-id -p blueprint.yaml --install-plugins`
-* Install the blueprint locally `aria execute -w install -b blueprint-id`
+* Write/Download a TOSCA blueprint - See https://github.com/aria-tosca/aria-examples
+
+* Get blueprint requirements:
+
+ `aria create-requirements -p blueprint.yaml`
+
+* Initialze aria with TOSCA blueprint:
+
+ `aria validate -p blueprint.yaml`
+ `aria init -b blueprint-id -p blueprint.yaml --install-plugins --debug`
+
+* Install the blueprint:
+
+  `aria execute -w install -b blueprint-id --allow-custom-parameters --task-retries 10 --task-retry-interval 10`
+
+* See blueprint deployment outputs:
+
+  `aria outputs -b blueprint-id`
+
+* See blueprint deployment outputs:
+
+  `aria instances -b blueprint-id`
+
+or
+
+  `aria instances -b blueprint-id --node-id node-id`
+
 
 ## Read more
 
