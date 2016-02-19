@@ -12,11 +12,14 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
+import os
+import sys
 
-import tempfile
+from virtualenvapi import manage
+from virtualenvapi import exceptions
 
 from aria_core import constants
-from aria_core import exceptions
+from aria_core import exceptions as aria_exceptions
 from aria_core import logger
 from aria_core import logger_config
 from aria_core import utils
@@ -28,48 +31,51 @@ LOG = logger.get_logger('aria_cli.cli.main')
 
 
 def initialize_blueprint(blueprint_path,
-                         name,
+                         blueprint_id,
                          storage,
                          install_plugins=False,
                          inputs=None,
                          resolver=None):
-    if install_plugins:
-        install_blueprint_plugins(
-            blueprint_path=blueprint_path)
+
+    venv_path = install_blueprint_plugins(
+        blueprint_id, blueprint_path,
+        install_plugins=install_plugins)
     provider_context = (
         logger_config.AriaConfig().local_provider_context)
     inputs = utils.inputs_to_dict(inputs, 'inputs')
-    return futures.aria_local.init_env(
+    sys.path.append(venv_path)
+    env = futures.aria_local.init_env(
         blueprint_path=blueprint_path,
-        name=name,
+        name=blueprint_id,
         inputs=inputs,
         storage=storage,
         ignored_modules=constants.IGNORED_LOCAL_WORKFLOW_MODULES,
         provider_context=provider_context,
         resolver=resolver)
+    del sys.path[sys.path.index(venv_path)]
+    return env
 
 
-def install_blueprint_plugins(blueprint_path, logger_instance=None):
-
-    requirements = blueprint_processor.create_requirements(
-        blueprint_path=blueprint_path
-    )
-
-    if requirements:
-        # validate we are inside a virtual env
-        if not utils.is_virtual_env():
-            raise exceptions.AriaError(
-                'You must be running inside a '
-                'virtualenv to install blueprint plugins')
-
-        runner = futures.aria_side_utils.LocalCommandRunner(LOG)
-        # dump the requirements to a file
-        # and let pip install it.
-        # this will utilize pip's mechanism
-        # of cleanup in case an installation fails.
-        tmp_path = tempfile.mkstemp(suffix='.txt', prefix='requirements_')[1]
-        utils.dump_to_file(collection=requirements, file_path=tmp_path)
-        runner.run(command='pip install -r {0}'.format(tmp_path),
-                   stdout_pipe=False)
-    else:
-        LOG.debug('There are no plugins to install.')
+def install_blueprint_plugins(blueprint_id, blueprint_path,
+                              install_plugins=False):
+    requirements = blueprint_processor.create_requirements(blueprint_path)
+    if install_plugins:
+        if requirements:
+            venv_path = os.path.join(utils.get_cwd(),
+                                     '.venv_{0}'.format(blueprint_id))
+            venv = manage.VirtualEnvironment(
+                venv_path, python=sys.executable.split('/')[-1])
+            venv.open_or_create()
+            for req in requirements:
+                if not venv.is_installed(req):
+                    try:
+                        venv.install(req)
+                        LOG.info("Installed dependency: {0}".format(req))
+                    except exceptions.PackageInstallationException:
+                        msg = 'Unable to install {0} dependency'.format(req)
+                        LOG.error(msg)
+                        raise aria_exceptions.AriaError(msg)
+            LOG.info("Virtualenv {0} was used or created.".format(venv_path))
+            return os.path.join(venv_path, 'lib', venv.python, 'site-packages')
+        else:
+            LOG.debug('There are no plugins to install.')

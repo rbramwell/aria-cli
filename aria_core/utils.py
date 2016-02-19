@@ -26,6 +26,8 @@ from aria_core import constants
 from aria_core import logger_config
 from aria_core.dependencies import futures
 
+STORAGE_DIR_NAME = 'local-storage'
+
 
 def dump_to_file(collection, file_path):
     with open(file_path, 'a') as f:
@@ -261,3 +263,9 @@ def delete_aria_working_dir_settings():
         constants.ARIA_WD_SETTINGS_FILE_NAME)
     if os.path.exists(target_file_path):
         os.remove(target_file_path)
+
+
+def storage_dir(blueprint_id):
+    return os.path.join(os.getcwd(),
+                        STORAGE_DIR_NAME,
+                        blueprint_id)

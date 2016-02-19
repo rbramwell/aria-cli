@@ -11,15 +11,24 @@
 #    WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
 #    License for the specific language governing permissions and limitations
 #    under the License.
+import sys
+import os
 
 
-def generic_execute(workflow_id=None,
+def generic_execute(blueprint_id=None,
+                    workflow_id=None,
                     parameters=None,
                     allow_custom_parameters=None,
                     task_retries=None,
                     task_retry_interval=None,
                     task_thread_pool_size=None,
                     environment=None):
+    venv_path = os.path.join(os.getcwd(),
+                             '.venv_{0}'.format(blueprint_id),
+                             'lib',
+                             sys.executable.split('/')[-1],
+                             'site-packages')
+    sys.path.append(venv_path)
     result = environment.execute(
         workflow=workflow_id,
         parameters=parameters,
@@ -27,6 +36,7 @@ def generic_execute(workflow_id=None,
         task_retries=task_retries,
         task_retry_interval=task_retry_interval,
         task_thread_pool_size=task_thread_pool_size)
+    del sys.path[sys.path.index(venv_path)]
     return result
 
 

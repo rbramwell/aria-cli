@@ -97,19 +97,6 @@ def parser_config():
                 },
                 'handler': aria.local.init
             },
-            'install-plugins': {
-                'help': 'Installs the necessary plugins for a given blueprint',
-                'arguments': {
-                    '-p,--blueprint-path': {
-                        'dest': 'blueprint_path',
-                        'metavar': 'BLUEPRINT_PATH',
-                        'type': str,
-                        'required': True,
-                        'help': 'Path to a blueprint'
-                    }
-                },
-                'handler': aria.local.install_plugins
-            },
             'create-requirements': {
                 'help': 'Creates a PIP compliant requirements file for the given blueprint',
                 'arguments': {

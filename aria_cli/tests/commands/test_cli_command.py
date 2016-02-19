@@ -108,13 +108,14 @@ class CliCommandTest(unittest.TestCase):
                              cli_command,
                              module,
                              function_name,
+                             args,
                              kwargs):
         with patch.object(module, function_name) as mock:
             try:
                 cli_runner.run_cli(cli_command)
             except BaseException as e:
                 self.logger.info(e.message)
-            mock.assert_called_with(**kwargs)
+            mock.assert_called_with(*args, **kwargs)
 
     def _create_cosmo_wd_settings(self, settings=None):
         directory_settings = utils.AriaWorkingDirectorySettings()

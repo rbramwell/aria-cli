@@ -23,6 +23,7 @@ import tempfile
 
 from aria_processor import virtualenv_processor
 
+from aria_cli.commands import local
 from aria_cli.tests import cli_runner
 from aria_cli.tests.commands import test_cli_command
 
@@ -44,7 +45,6 @@ class LocalTest(test_cli_command.CliCommandTest):
             'No such file or directory')
 
     def test_local_with_multiple_blueprints(self):
-        from aria_cli.commands import local
         b_id_test_1 = self._local_init(
             custom_blueprint_id='test-1')
         test_1_env = local._load_env(b_id_test_1)
@@ -89,7 +89,8 @@ class LocalTest(test_cli_command.CliCommandTest):
                         .format(blueprint_path, b_id),
             module=virtualenv_processor,
             function_name='install_blueprint_plugins',
-            kwargs={'blueprint_path': blueprint_path}
+            args=[b_id, blueprint_path],
+            kwargs={'install_plugins': True}
         )
 
     def test_empty_requirements(self):
@@ -110,8 +111,6 @@ class LocalTest(test_cli_command.CliCommandTest):
             "Run 'aria init --install-plugins -p {0} -b {1}'"
             .format(blueprint_path,
                     blueprint),
-            "Run 'aria install-plugins -p {0}'"
-            .format(blueprint_path)
         ]
         try:
             self._local_init(blueprint=blueprint)
@@ -234,17 +233,6 @@ class LocalTest(test_cli_command.CliCommandTest):
             .format(test_cli_command.BLUEPRINTS_DIR))
         for requirement in expected_requirements:
             self.assertIn(requirement, output)
-
-    def test_install_plugins(self):
-
-        blueprint_path = ('{0}/local/blueprint_with_plugins.yaml'.
-                          format(test_cli_command.BLUEPRINTS_DIR))
-        try:
-            cli_runner.run_cli('aria install-plugins -p {0}'
-                               .format(blueprint_path))
-        except futures.aria_aside_exceptions.CommandExecutionException as e:
-            self.assertIn('pip install -r ',
-                          e.message)
 
     def _local_init(self,
                     inputs=None,
