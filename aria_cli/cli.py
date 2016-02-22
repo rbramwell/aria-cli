@@ -19,7 +19,7 @@ import traceback
 import argcomplete
 import logging
 
-from aria_cli import exceptions
+from aria_core import exceptions
 
 
 verbose_output = False
@@ -198,7 +198,7 @@ def _set_cli_except_hook():
         prefix = None
         server_traceback = None
         output_message = True
-        if issubclass(tpe, exceptions.SuppressedAriaCliError):
+        if issubclass(tpe, exceptions.SuppressedAriaError):
             output_message = False
         if verbose_output:
             # print traceback if verbose

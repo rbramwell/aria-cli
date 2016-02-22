@@ -67,6 +67,13 @@ def parser_config():
                 'help': 'Init a local workflow execution environment in '
                         'in the current working directory',
                 'arguments': {
+                    '-b,--blueprint-id': {
+                        'dest': 'blueprint_id',
+                        'metavar': 'BLUEPRINT_ID',
+                        'type': str,
+                        'required': True,
+                        'help': 'Blueprint ID'
+                    },
                     '-p,--blueprint-path': {
                         'dest': 'blueprint_path',
                         'metavar': 'BLUEPRINT_PATH',
@@ -89,19 +96,6 @@ def parser_config():
                     }
                 },
                 'handler': aria.local.init
-            },
-            'install-plugins': {
-                'help': 'Installs the necessary plugins for a given blueprint',
-                'arguments': {
-                    '-p,--blueprint-path': {
-                        'dest': 'blueprint_path',
-                        'metavar': 'BLUEPRINT_PATH',
-                        'type': str,
-                        'required': True,
-                        'help': 'Path to a blueprint'
-                    }
-                },
-                'handler': aria.local.install_plugins
             },
             'create-requirements': {
                 'help': 'Creates a PIP compliant requirements file for the given blueprint',
@@ -126,6 +120,13 @@ def parser_config():
             'execute': {
                 'help': 'Execute a workflow locally',
                 'arguments': {
+                    '-b,--blueprint-id': {
+                        'dest': 'blueprint_id',
+                        'metavar': 'BLUEPRINT_ID',
+                        'type': str,
+                        'required': True,
+                        'help': 'Blueprint ID'
+                    },
                     '-w,--workflow':
                         argument_utils.remove_completer(
                             workflow_id_argument(
@@ -162,24 +163,32 @@ def parser_config():
                         'type': int,
                         'help': 'How many seconds to wait before each task is retried'
                     },
-                    '--task-thread-pool-size': {
-                        'metavar': 'TASK_THREAD_POOL_SIZE',
-                        'dest': 'task_thread_pool_size',
-                        'default': 1,
-                        'type': int,
-                        'help': 'The size of the thread pool size to execute tasks in'
-                    }
                 },
                 'handler': aria.local.execute
             },
             'outputs': {
                 'help': 'Display outputs',
-                'arguments': {},
+                'arguments': {
+                    '-b,--blueprint-id': {
+                        'dest': 'blueprint_id',
+                        'metavar': 'BLUEPRINT_ID',
+                        'type': str,
+                        'required': True,
+                        'help': 'Blueprint ID'
+                    },
+                },
                 'handler': aria.local.outputs
             },
             'instances': {
                 'help': 'Display node instances',
                 'arguments': {
+                    '-b,--blueprint-id': {
+                        'dest': 'blueprint_id',
+                        'metavar': 'BLUEPRINT_ID',
+                        'type': str,
+                        'required': True,
+                        'help': 'Blueprint ID'
+                    },
                     '--node-id': {
                         'metavar': 'NODE_ID',
                         'dest': 'node_id',

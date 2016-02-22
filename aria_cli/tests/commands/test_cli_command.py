@@ -19,9 +19,9 @@ import unittest
 from mock import patch
 
 
-from aria_cli import exceptions
 from aria_cli.tests import cli_runner
 
+from aria_core import exceptions
 from aria_core import utils
 from aria_core import logger_config
 from aria_core.dependencies import futures
@@ -95,7 +95,7 @@ class CliCommandTest(unittest.TestCase):
             cli_runner.run_cli(cli_cmd)
             self.fail('Expected error {0} was not raised for command {1}'
                       .format(err_str_segment, cli_cmd))
-        except (exceptions.AriaCliError,
+        except (exceptions.AriaError,
                 SystemExit,
                 exceptions.AriaValidationError,
                 ValueError,
@@ -108,13 +108,14 @@ class CliCommandTest(unittest.TestCase):
                              cli_command,
                              module,
                              function_name,
+                             args,
                              kwargs):
         with patch.object(module, function_name) as mock:
             try:
                 cli_runner.run_cli(cli_command)
             except BaseException as e:
                 self.logger.info(e.message)
-            mock.assert_called_with(**kwargs)
+            mock.assert_called_with(*args, **kwargs)
 
     def _create_cosmo_wd_settings(self, settings=None):
         directory_settings = utils.AriaWorkingDirectorySettings()

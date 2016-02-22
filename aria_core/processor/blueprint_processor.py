@@ -13,66 +13,8 @@
 #    under the License.
 
 import os
-import tempfile
 
-from aria_cli import exceptions
-
-from aria_core import constants
-from aria_core import logger
-from aria_core import logger_config
-from aria_core import utils
 from aria_core.dependencies import futures
-
-LOG = logger.get_logger('aria_cli.cli.main')
-
-
-def initialize_blueprint(blueprint_path,
-                         name,
-                         storage,
-                         install_plugins=False,
-                         inputs=None,
-                         resolver=None):
-    if install_plugins:
-        install_blueprint_plugins(
-            blueprint_path=blueprint_path
-        )
-    provider_context = (
-        logger_config.AriaConfig().local_provider_context)
-    inputs = utils.inputs_to_dict(inputs, 'inputs')
-    return futures.aria_local.init_env(
-        blueprint_path=blueprint_path,
-        name=name,
-        inputs=inputs,
-        storage=storage,
-        ignored_modules=constants.IGNORED_LOCAL_WORKFLOW_MODULES,
-        provider_context=provider_context,
-        resolver=resolver)
-
-
-def install_blueprint_plugins(blueprint_path):
-
-    requirements = create_requirements(
-        blueprint_path=blueprint_path
-    )
-
-    if requirements:
-        # validate we are inside a virtual env
-        if not utils.is_virtual_env():
-            raise exceptions.AriaCliError(
-                'You must be running inside a '
-                'virtualenv to install blueprint plugins')
-
-        runner = futures.aria_side_utils.LocalCommandRunner(LOG)
-        # dump the requirements to a file
-        # and let pip install it.
-        # this will utilize pip's mechanism
-        # of cleanup in case an installation fails.
-        tmp_path = tempfile.mkstemp(suffix='.txt', prefix='requirements_')[1]
-        utils.dump_to_file(collection=requirements, file_path=tmp_path)
-        runner.run(command='pip install -r {0}'.format(tmp_path),
-                   stdout_pipe=False)
-    else:
-        LOG.debug('There are no plugins to install.')
 
 
 def create_requirements(blueprint_path):

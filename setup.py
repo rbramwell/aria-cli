@@ -22,6 +22,7 @@ setup(
     author_email='Aria-TOSCA@aria.io',
     packages=['aria_cli',
               'aria_core',
+              'aria_core.processor',
               'aria_core.dependencies',
               'aria_cli.commands',
               'aria_cli.config'],
@@ -36,7 +37,6 @@ setup(
     entry_points={
         'console_scripts': [
             'aria = aria_cli.cli:main',
-            'activate_aria_bash_completion = aria_cli.activate_bash_completion:main'  # NOQA
         ]
     },
     install_requires=[
@@ -45,5 +45,6 @@ setup(
         'pyyaml==3.10',
         'argcomplete==0.7.1',
         'jinja2==2.7.2',
+        'virtualenv-api',
     ]
 )

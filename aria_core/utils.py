@@ -13,21 +13,19 @@
 #    under the License.
 
 import contextlib
-import json
 import os
-import pkgutil
 import sys
 import yaml
 import pkg_resources
 
 from jinja2 import environment
 
-import aria_cli
-from aria_cli import exceptions
-
 from aria_core import constants
+from aria_core import exceptions
 from aria_core import logger_config
 from aria_core.dependencies import futures
+
+STORAGE_DIR_NAME = 'local-storage'
 
 
 def dump_to_file(collection, file_path):
@@ -45,20 +43,20 @@ def load_aria_working_dir_settings(suppress_error=False):
         path = get_context_path()
         with open(path, 'r') as f:
             return yaml.load(f.read())
-    except exceptions.AriaCliError:
+    except exceptions.AriaError:
         if suppress_error:
             return None
         raise
 
 
 def raise_uninitialized():
-    error = exceptions.AriaCliError(
+    error = exceptions.AriaError(
         'Not initialized: Cannot find {0} in {1}, '
         'or in any of its parent directories'
         .format(constants.ARIA_WD_SETTINGS_DIRECTORY_NAME,
                 get_cwd()))
     error.possible_solutions = [
-        "Run 'cfy init' in this directory"
+        "Run 'aria init -p [blueprint-path]' in this directory"
     ]
     raise error
 
@@ -72,7 +70,7 @@ def get_context_path():
         constants.ARIA_WD_SETTINGS_FILE_NAME
     )
     if not os.path.exists(context_path):
-        raise exceptions.AriaCliError(
+        raise exceptions.AriaError(
             'File {0} does not exist'
             .format(context_path)
         )
@@ -85,7 +83,7 @@ def inputs_to_dict(resource, resource_name):
     try:
         # parse resource as string representation of a dictionary
         parsed_dict = plain_string_to_dict(resource)
-    except exceptions.AriaCliError:
+    except exceptions.AriaError:
         try:
             # if resource is a path - parse as a yaml file
             if os.path.exists(resource):
@@ -97,7 +95,7 @@ def inputs_to_dict(resource, resource_name):
         except yaml.error.YAMLError as e:
             msg = ("'{0}' is not a valid YAML. {1}"
                    .format(resource_name, str(e)))
-            raise exceptions.AriaCliError(msg)
+            raise exceptions.AriaError(msg)
 
     if isinstance(parsed_dict, dict):
         return parsed_dict
@@ -105,9 +103,8 @@ def inputs_to_dict(resource, resource_name):
         msg = (("Invalid input: {0}. {1} must represent a dictionary. Valid "
                 "values can either be a path to a YAML file, a string "
                 "formatted as YAML or a string formatted as "
-                "key1=value1;key2=value2")
-                .format(resource, resource_name))
-        raise exceptions.AriaCliError(msg)
+                "key1=value1;key2=value2").format(resource, resource_name))
+        raise exceptions.AriaError(msg)
 
 
 def plain_string_to_dict(input_string):
@@ -126,7 +123,7 @@ def plain_string_to_dict(input_string):
         else:
             msg = "Invalid input format: {0}, the expected format is: " \
                   "key1=value1;key2=value2".format(input_string)
-            raise exceptions.AriaCliError(msg)
+            raise exceptions.AriaError(msg)
 
     return input_dict
 
@@ -159,6 +156,7 @@ def get_configuration_path():
 
 
 def dump_configuration_file():
+    import aria_cli
     config = pkg_resources.resource_string(
         aria_cli.__name__,
         'resources/config.yaml')
@@ -244,16 +242,6 @@ def decode_dict(data):
     return rv
 
 
-def get_version():
-    version_data = get_version_data()
-    return version_data['version']
-
-
-def get_version_data():
-    data = pkgutil.get_data('aria_cli', 'VERSION')
-    return json.loads(data)
-
-
 class AriaWorkingDirectorySettings(yaml.YAMLObject):
     yaml_tag = u'!WD_Settings'
     yaml_loader = yaml.Loader
@@ -274,3 +262,9 @@ def delete_aria_working_dir_settings():
         constants.ARIA_WD_SETTINGS_FILE_NAME)
     if os.path.exists(target_file_path):
         os.remove(target_file_path)
+
+
+def storage_dir(blueprint_id):
+    return os.path.join(os.getcwd(),
+                        STORAGE_DIR_NAME,
+                        blueprint_id)

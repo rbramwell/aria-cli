@@ -5,3 +5,4 @@ nose-cov
 testfixtures
 mock>=1.0.1
 sphinx-argparse
+bandit

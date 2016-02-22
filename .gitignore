@@ -63,5 +63,5 @@ docs/_build/
 .idea/
 .cloudify/
 .aria/
-.venv/
+.venv*
 local-storage/
