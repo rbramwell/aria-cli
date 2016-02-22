@@ -21,8 +21,8 @@ from aria_core import utils
 from aria_core.dependencies import futures
 
 
-from aria_processor import virtualenv_processor
-from aria_processor import blueprint_processor
+from aria_core.processor import virtualenv_processor
+from aria_core.processor import blueprint_processor
 
 LOG = logger.logging.getLogger(__name__)
 

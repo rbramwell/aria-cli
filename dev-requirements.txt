@@ -1,7 +1,0 @@
-git+https://github.com/aria-tosca/dsl-parser@master#egg=aria-dsl-parser==0.1
-git+https://github.com/aria-tosca/plugins-common@master#egg=aria-plugins-common==0.1
-
-mock
-# adding this requirement for readthedocs until we perhaps
-# decide on a better way of doing this
-sphinx-argparse

@@ -24,8 +24,7 @@ from aria_core import logger
 from aria_core import logger_config
 from aria_core import utils
 from aria_core.dependencies import futures
-
-from aria_processor import blueprint_processor
+from aria_core.processor import blueprint_processor
 
 LOG = logger.get_logger('aria_cli.cli.main')
 

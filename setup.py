@@ -22,7 +22,7 @@ setup(
     author_email='Aria-TOSCA@aria.io',
     packages=['aria_cli',
               'aria_core',
-              'aria_processor',
+              'aria_core.processor',
               'aria_core.dependencies',
               'aria_cli.commands',
               'aria_cli.config'],
