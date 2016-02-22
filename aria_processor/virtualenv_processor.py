@@ -34,8 +34,7 @@ def initialize_blueprint(blueprint_path,
                          blueprint_id,
                          storage,
                          install_plugins=False,
-                         inputs=None,
-                         resolver=None):
+                         inputs=None):
 
     venv_path = install_blueprint_plugins(
         blueprint_id, blueprint_path,
@@ -51,7 +50,7 @@ def initialize_blueprint(blueprint_path,
         storage=storage,
         ignored_modules=constants.IGNORED_LOCAL_WORKFLOW_MODULES,
         provider_context=provider_context,
-        resolver=resolver)
+        resolver=utils.get_import_resolver())
     del sys.path[sys.path.index(venv_path)]
     return env
 

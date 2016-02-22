@@ -21,9 +21,6 @@ import shutil
 import os
 
 
-from aria_processor import virtualenv_processor
-from aria_processor import blueprint_processor
-
 from aria_cli.commands import init as aria
 
 from aria_core import blueprints
@@ -52,13 +49,12 @@ def init(blueprint_id,
         aria.init(reset_config=False, skip_logging=True)
 
     try:
-        virtualenv_processor.initialize_blueprint(
+        blueprints.initialize_blueprint(
             blueprint_path,
             blueprint_id,
             blueprints.init_blueprint_storage(blueprint_id),
             inputs=inputs,
             install_plugins=install_plugins_,
-            resolver=utils.get_import_resolver()
         )
     except ImportError as e:
         e.possible_solutions = [
@@ -99,21 +95,12 @@ def execute(blueprint_id,
 
 
 def outputs(blueprint_id):
-    env = blueprints.load_blueprint_storage_env(blueprint_id)
-    _outputs = json.dumps(env.outputs() or {},
-                          sort_keys=True, indent=2)
+    _outputs = blueprints.outputs(blueprint_id)
     LOG.info(_outputs)
 
 
 def instances(blueprint_id, node_id):
-    env = blueprints.load_blueprint_storage_env(blueprint_id)
-    node_instances = env.storage.get_node_instances()
-    if node_id:
-        node_instances = [instance for instance in node_instances
-                          if instance.node_id == node_id]
-        if not node_instances:
-            raise exceptions.AriaError('No node with id: {0}'
-                                       .format(node_id))
+    node_instances = blueprints.instances(blueprint_id, node_id=node_id)
     LOG.info(
         json.dumps(node_instances,
                    sort_keys=True,
@@ -125,7 +112,7 @@ def create_requirements(blueprint_path, output):
         raise exceptions.AriaError('output path already exists : {0}'
                                    .format(output))
 
-    requirements = blueprint_processor.create_requirements(
+    requirements = blueprints.create_requirements(
         blueprint_path=blueprint_path
     )
 

@@ -21,8 +21,6 @@ import json
 import tempfile
 
 
-from aria_processor import virtualenv_processor
-
 from aria_cli.commands import local
 from aria_cli.tests import cli_runner
 from aria_cli.tests.commands import test_cli_command
@@ -80,20 +78,6 @@ class LocalTest(test_cli_command.CliCommandTest):
         output = cli_runner.run_cli(
             'aria outputs -b {0}'.format(blueprint_id))
         self.assertIn('"param": "default_param"', output)
-
-    def test_local_init_install_plugins(self):
-        b_id = "blueprint_with_plugins"
-        blueprint_path = '{0}/local/{1}.yaml'.format(
-            test_cli_command.BLUEPRINTS_DIR, b_id)
-
-        self.assert_method_called(
-            cli_command='aria init --install-plugins -p {0} -b {1}'
-                        .format(blueprint_path, b_id),
-            module=virtualenv_processor,
-            function_name='install_blueprint_plugins',
-            args=[b_id, blueprint_path],
-            kwargs={'install_plugins': True}
-        )
 
     def test_empty_requirements(self):
         blueprint = 'blueprint_without_plugins'

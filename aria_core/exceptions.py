@@ -13,7 +13,7 @@
 #    under the License.
 
 """
-Aria CLI Exceptions
+Aria Exceptions
 """
 
 

@@ -20,9 +20,8 @@ import pkg_resources
 
 from jinja2 import environment
 
-from aria_core import exceptions
-
 from aria_core import constants
+from aria_core import exceptions
 from aria_core import logger_config
 from aria_core.dependencies import futures
 

@@ -11,6 +11,8 @@
 #    WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
 #    License for the specific language governing permissions and limitations
 #    under the License.
+
+import json
 import os
 
 from aria_core import exceptions
@@ -18,7 +20,18 @@ from aria_core import logger
 from aria_core import utils
 from aria_core.dependencies import futures
 
+
+from aria_processor import virtualenv_processor
+from aria_processor import blueprint_processor
+
 LOG = logger.logging.getLogger(__name__)
+
+initialize_blueprint = virtualenv_processor.initialize_blueprint
+create_requirements = blueprint_processor.create_requirements
+
+
+def install_blueprint_plugins(*args, **kwargs):
+    return virtualenv_processor.install_blueprint_plugins(*args, **kwargs)
 
 
 def validate(blueprint_path):
@@ -50,3 +63,19 @@ def load_blueprint_storage_env(blueprint_id):
     return futures.aria_local.load_env(
         name=blueprint_id,
         storage=init_blueprint_storage(blueprint_id))
+
+
+def outputs(blueprint_id):
+    env = load_blueprint_storage_env(blueprint_id)
+    _outputs = json.dumps(env.outputs() or {},
+                          sort_keys=True, indent=2)
+    return _outputs
+
+
+def instances(blueprint_id, node_id=None):
+    env = load_blueprint_storage_env(blueprint_id)
+    node_instances = env.storage.get_node_instances(node_id=node_id)
+    if not node_instances:
+        raise exceptions.AriaError('No node with id: {0}'
+                                   .format(node_id))
+    return node_instances

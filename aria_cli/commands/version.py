@@ -19,8 +19,7 @@ Handles 'aria --version'
 import argparse
 import json
 import pkgutil
-
-from StringIO import StringIO
+import StringIO
 
 
 def get_version_data():
@@ -54,7 +53,7 @@ class VersionAction(argparse.Action):
         all_data['prefix'] = prefix or ''
         all_data['suffix'] = suffix or ''
         all_data['infix'] = infix or ''
-        output = StringIO()
+        output = StringIO.StringIO()
         output.write('{prefix}{version}'.format(**all_data))
         if version_data['build']:
             output.write('{infix}(build: {build}, date: {date})'.format(
