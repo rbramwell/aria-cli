@@ -13,7 +13,6 @@
 #    under the License.
 
 import json
-import os
 
 from aria_core import exceptions
 from aria_core import logger
@@ -28,10 +27,7 @@ LOG = logger.logging.getLogger(__name__)
 
 initialize_blueprint = virtualenv_processor.initialize_blueprint
 create_requirements = blueprint_processor.create_requirements
-
-
-def install_blueprint_plugins(*args, **kwargs):
-    return virtualenv_processor.install_blueprint_plugins(*args, **kwargs)
+install_blueprint_plugins = virtualenv_processor.install_blueprint_plugins
 
 
 def validate(blueprint_path):
@@ -50,30 +46,41 @@ def init_blueprint_storage(blueprint_id):
         storage_dir=utils.storage_dir(blueprint_id))
 
 
+def with_blueprint_storage(action):
+
+    def with_blueprint_storage_wrapper(*args, **kwargs):
+        b_id = args[0]
+        env = load_blueprint_storage_env(b_id)
+        yield action(env, **kwargs)
+
+    return with_blueprint_storage_wrapper
+
+
+def coroutine(generator_func):
+
+    def coroutine_wrapper(*args, **kwargs):
+        return generator_func(*args, **kwargs).next()
+
+    return coroutine_wrapper
+
+
 def load_blueprint_storage_env(blueprint_id):
-    if not os.path.isdir(utils.storage_dir(blueprint_id)):
-        error = exceptions.AriaError(
-            '{0} has not been initialized with a blueprint.'
-            .format(utils.get_cwd()))
-        error.possible_solutions = [
-            ("Run 'aria init -b [blueprint-id] "
-             "-p [path-to-blueprint]' in this directory")
-        ]
-        raise error
     return futures.aria_local.load_env(
         name=blueprint_id,
         storage=init_blueprint_storage(blueprint_id))
 
 
-def outputs(blueprint_id):
-    env = load_blueprint_storage_env(blueprint_id)
+@coroutine
+@with_blueprint_storage
+def outputs(env):
     _outputs = json.dumps(env.outputs() or {},
                           sort_keys=True, indent=2)
     return _outputs
 
 
-def instances(blueprint_id, node_id=None):
-    env = load_blueprint_storage_env(blueprint_id)
+@coroutine
+@with_blueprint_storage
+def instances(env, node_id=None):
     node_instances = env.storage.get_node_instances(node_id=node_id)
     if not node_instances:
         raise exceptions.AriaError('No node with id: {0}'

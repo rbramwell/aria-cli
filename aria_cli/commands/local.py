@@ -72,6 +72,19 @@ def init(blueprint_id,
         .format(blueprint_path, blueprint_id))
 
 
+def _validate_and_load_env(blueprint_id):
+    if not os.path.isdir(utils.storage_dir(blueprint_id)):
+        error = exceptions.AriaError(
+            '{0} has not been initialized with a blueprint.'
+            .format(utils.get_cwd()))
+        error.possible_solutions = [
+            ("Run 'aria init -b [blueprint-id] "
+             "-p [path-to-blueprint]' in this directory")
+        ]
+        raise error
+    return blueprints.load_blueprint_storage_env(blueprint_id)
+
+
 def execute(blueprint_id,
             workflow_id,
             parameters,
@@ -86,7 +99,7 @@ def execute(blueprint_id,
         allow_custom_parameters=allow_custom_parameters,
         task_retries=task_retries,
         task_retry_interval=task_retry_interval,
-        environment=blueprints.load_blueprint_storage_env(
+        environment=_validate_and_load_env(
             blueprint_id))
     if result:
         LOG.info(json.dumps(result,
