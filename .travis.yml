@@ -1,4 +1,4 @@
-sudo: false
+sudo: true
 language: python
 python:
   - "2.7"
@@ -6,8 +6,9 @@ env:
   - TOX_ENV=docs
   - TOX_ENV=pep8
   - TOX_ENV=py27
-  - TOX_ENV=local-blueprint
-  - TOX_ENV=multicloud-blueprint
+  - TOX_ENV=validate-local-blueprint
+  - TOX_ENV=validate-multicloud-blueprint
+  - TOX_ENV=execute-local-blueprint
 
 install:
   - ssh-keygen -t rsa -N "" -f ~/.ssh/id_rsa
