@@ -20,6 +20,9 @@ install:
 
 script:
   - tox -e $TOX_ENV
+  - pip install -e .
+
+  - aria init -b multicloud-id -p aria-examples/multicloud-blueprint.yaml -i aria-examples/inputs/multicloud.yaml.template --install-plugins --debug
 
 deploy:
 
