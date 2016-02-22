@@ -47,11 +47,13 @@ class LocalTest(test_cli_command.CliCommandTest):
     def test_local_with_multiple_blueprints(self):
         b_id_test_1 = self._local_init(
             custom_blueprint_id='test-1')
-        test_1_env = local._load_env(b_id_test_1)
+        test_1_env = local.blueprints.load_blueprint_storage_env(
+            b_id_test_1)
         env_path_1 = test_1_env.storage._root_storage_dir
         b_id_test_2 = self._local_init(
             custom_blueprint_id='test-2')
-        test_2_env = local._load_env(b_id_test_2)
+        test_2_env = local.blueprints.load_blueprint_storage_env(
+            b_id_test_2)
         env_path_2 = test_2_env.storage._root_storage_dir
         self.assertTrue(os.path.exists(env_path_1))
         self.assertTrue(os.path.exists(env_path_2))

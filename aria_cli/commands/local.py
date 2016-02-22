@@ -31,7 +31,6 @@ from aria_core import exceptions
 from aria_core import utils
 from aria_core import logger
 from aria_core import workflows
-from aria_core.dependencies import futures
 
 
 LOG = logger.get_logger('aria_cli.cli.main')
@@ -56,7 +55,7 @@ def init(blueprint_id,
         virtualenv_processor.initialize_blueprint(
             blueprint_path,
             blueprint_id,
-            _storage(blueprint_id),
+            blueprints.init_blueprint_storage(blueprint_id),
             inputs=inputs,
             install_plugins=install_plugins_,
             resolver=utils.get_import_resolver()
@@ -91,7 +90,8 @@ def execute(blueprint_id,
         allow_custom_parameters=allow_custom_parameters,
         task_retries=task_retries,
         task_retry_interval=task_retry_interval,
-        environment=_load_env(blueprint_id))
+        environment=blueprints.load_blueprint_storage_env(
+            blueprint_id))
     if result:
         LOG.info(json.dumps(result,
                             sort_keys=True,
@@ -99,14 +99,14 @@ def execute(blueprint_id,
 
 
 def outputs(blueprint_id):
-    env = _load_env(blueprint_id)
+    env = blueprints.load_blueprint_storage_env(blueprint_id)
     _outputs = json.dumps(env.outputs() or {},
                           sort_keys=True, indent=2)
     LOG.info(_outputs)
 
 
 def instances(blueprint_id, node_id):
-    env = _load_env(blueprint_id)
+    env = blueprints.load_blueprint_storage_env(blueprint_id)
     node_instances = env.storage.get_node_instances()
     if node_id:
         node_instances = [instance for instance in node_instances
@@ -138,22 +138,3 @@ def create_requirements(blueprint_path, output):
         for requirement in requirements:
             print(requirement)
             LOG.info(requirement)
-
-
-def _storage(blueprint_id):
-    return futures.aria_local.FileStorage(
-        storage_dir=utils.storage_dir(blueprint_id))
-
-
-def _load_env(blueprint_id):
-    if not os.path.isdir(utils.storage_dir(blueprint_id)):
-        error = exceptions.AriaError(
-            '{0} has not been initialized with a blueprint.'
-            .format(utils.get_cwd()))
-        error.possible_solutions = [
-            ("Run 'aria init -b [blueprint-id] "
-             "-p [path-to-blueprint]' in this directory")
-        ]
-        raise error
-    return futures.aria_local.load_env(name=blueprint_id,
-                                       storage=_storage(blueprint_id))
