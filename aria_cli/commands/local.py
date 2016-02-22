@@ -82,8 +82,7 @@ def execute(blueprint_id,
             parameters,
             allow_custom_parameters,
             task_retries,
-            task_retry_interval,
-            task_thread_pool_size):
+            task_retry_interval):
     parameters = utils.inputs_to_dict(parameters, 'parameters')
     result = workflows.generic_execute(
         blueprint_id=blueprint_id,
@@ -92,7 +91,6 @@ def execute(blueprint_id,
         allow_custom_parameters=allow_custom_parameters,
         task_retries=task_retries,
         task_retry_interval=task_retry_interval,
-        task_thread_pool_size=task_thread_pool_size,
         environment=_load_env(blueprint_id))
     if result:
         LOG.info(json.dumps(result,

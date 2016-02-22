@@ -25,7 +25,7 @@ ARIA's Command Line Interface.
 * Initialze aria with TOSCA blueprint:
 
  `aria validate -p blueprint.yaml`
- `aria init -b blueprint-id -p blueprint.yaml --install-plugins --debug`
+ `aria init -b blueprint-id -p blueprint.yaml -i inputs.yaml --install-plugins --debug`
 
 * Install the blueprint:
 

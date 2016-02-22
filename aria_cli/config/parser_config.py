@@ -163,13 +163,6 @@ def parser_config():
                         'type': int,
                         'help': 'How many seconds to wait before each task is retried'
                     },
-                    '--task-thread-pool-size': {
-                        'metavar': 'TASK_THREAD_POOL_SIZE',
-                        'dest': 'task_thread_pool_size',
-                        'default': 1,
-                        'type': int,
-                        'help': 'The size of the thread pool size to execute tasks in'
-                    }
                 },
                 'handler': aria.local.execute
             },
