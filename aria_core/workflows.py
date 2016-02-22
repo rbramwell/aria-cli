@@ -22,11 +22,12 @@ def generic_execute(blueprint_id=None,
                     task_retries=None,
                     task_retry_interval=None,
                     task_thread_pool_size=None,
-                    environment=None):
+                    environment=None,
+                    default_python_interpreter='python2.7'):
     venv_path = os.path.join(os.getcwd(),
                              '.venv_{0}'.format(blueprint_id),
                              'lib',
-                             sys.executable.split('/')[-1],
+                             default_python_interpreter,
                              'site-packages')
     sys.path.append(venv_path)
     result = environment.execute(

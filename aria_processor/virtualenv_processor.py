@@ -57,14 +57,15 @@ def initialize_blueprint(blueprint_path,
 
 
 def install_blueprint_plugins(blueprint_id, blueprint_path,
-                              install_plugins=False):
+                              install_plugins=False,
+                              default_python_interpreter='python2.7'):
     requirements = blueprint_processor.create_requirements(blueprint_path)
     if install_plugins:
         if requirements:
             venv_path = os.path.join(utils.get_cwd(),
                                      '.venv_{0}'.format(blueprint_id))
             venv = manage.VirtualEnvironment(
-                venv_path, python='python2.7')
+                venv_path, python=default_python_interpreter)
             venv.open_or_create()
             for req in requirements:
                 if not venv.is_installed(req):
