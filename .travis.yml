@@ -9,6 +9,7 @@ env:
   - TOX_ENV=validate-local-blueprint
   - TOX_ENV=validate-multicloud-blueprint
   - TOX_ENV=execute-local-blueprint
+  - TOX_ENV=py27-core-integration
 
 install:
   - ssh-keygen -t rsa -N "" -f ~/.ssh/id_rsa
