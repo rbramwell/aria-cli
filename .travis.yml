@@ -5,7 +5,6 @@ python:
 env:
   - TOX_ENV=docs
   - TOX_ENV=pep8
-  - TOX_ENV=py27
   - TOX_ENV=validate-local-blueprint
   - TOX_ENV=validate-multicloud-blueprint
   - TOX_ENV=execute-local-blueprint
@@ -23,7 +22,9 @@ script:
   - tox -e $TOX_ENV
   - pip install -e .
 
-  - aria init -b multicloud-id -p aria-examples/multicloud-blueprint.yaml -i aria-examples/inputs/multicloud.yaml.template --install-plugins --debug
+# commented until aria-core will be at PYPI
+#  - pip install aria-core
+#  - aria init -b multicloud-id -p aria-examples/multicloud-blueprint.yaml -i aria-examples/inputs/multicloud.yaml.template --install-plugins --debug
 
 deploy:
 

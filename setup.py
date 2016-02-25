@@ -21,9 +21,6 @@ setup(
     author='Aria-TOSCA',
     author_email='Aria-TOSCA@aria.io',
     packages=['aria_cli',
-              'aria_core',
-              'aria_core.processor',
-              'aria_core.dependencies',
               'aria_cli.commands',
               'aria_cli.config'],
     package_data={
@@ -40,8 +37,6 @@ setup(
         ]
     },
     install_requires=[
-        'aria-plugins-common==0.3',
-        'aria-dsl-parser==0.3',
         'pyyaml==3.10',
         'argcomplete==0.7.1',
         'jinja2==2.7.2',
