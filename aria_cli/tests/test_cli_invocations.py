@@ -21,7 +21,7 @@ import unittest
 
 from nose import tools
 
-from aria_core import utils
+# from aria_core import utils
 
 from aria_cli import commands
 from aria_cli.tests import cli_runner
@@ -113,7 +113,6 @@ class CliInvocationTest(unittest.TestCase):
     original_local_execute = None
     original_local_outputs = None
     original_local_instances = None
-    original_local_install_plugins = None
     original_local_create_requirements = None
 
     @classmethod
@@ -123,14 +122,10 @@ class CliInvocationTest(unittest.TestCase):
         commands.local.init = cls.original_local_init
         commands.local.outputs = cls.original_local_outputs
         commands.local.instances = cls.original_local_instances
-        commands.local.install_plugins = cls.original_local_install_plugins
         commands.local.create_requirements = cls.original_local_create_requirements  # NOQA
 
     @classmethod
     def setUpClass(cls):
-
-        # setting up the mocks.
-        utils.get_management_server_ip = lambda x: 'localhost'
 
         # blueprint commands
         cls.original_blueprints_validate = commands.local.validate
@@ -154,10 +149,6 @@ class CliInvocationTest(unittest.TestCase):
         cls.original_local_instances = commands.local.instances
         commands.local.instances = mock.create_autospec(
             commands.local.instances, return_value=None
-        )
-        cls.original_local_install_plugins = commands.local.install_plugins
-        commands.local.install_plugins = mock.create_autospec(
-            commands.local.install_plugins, return_value=None
         )
         cls.original_local_create_requirements = (
             commands.local.create_requirements)
