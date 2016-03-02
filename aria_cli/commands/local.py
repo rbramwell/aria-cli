@@ -21,20 +21,23 @@ import shutil
 import os
 
 
-from aria_cli.commands import init as aria
+from aria_cli.commands import init as aria_cli
 
-from aria_core import blueprints
+from aria_cli import messages
+from aria_core import api
 from aria_core import exceptions
 from aria_core import utils
 from aria_core import logger
-from aria_core import workflows
 
 
 LOG = logger.get_logger('aria_cli.cli.main')
 
 
 def validate(blueprint_path=None):
-    return blueprints.validate(blueprint_path)
+    LOG.info(messages.VALIDATING_BLUEPRINT)
+    aria_api = api.AriaCoreAPI()
+    aria_api.blueprints.validate(blueprint_path.name)
+    LOG.info(messages.VALIDATING_BLUEPRINT_SUCCEEDED)
 
 
 def init(blueprint_id,
@@ -42,26 +45,27 @@ def init(blueprint_id,
          inputs,
          install_plugins_):
 
+    aria_api = api.AriaCoreAPI()
     if os.path.isdir(utils.storage_dir(blueprint_id)):
         shutil.rmtree(utils.storage_dir(blueprint_id))
 
     if not utils.is_initialized():
-        aria.init(reset_config=False, skip_logging=True)
+        aria_cli.init(reset_config=False, skip_logging=True)
 
     try:
-        blueprints.initialize_blueprint(
-            blueprint_path,
+        aria_api.blueprints.initialize(
             blueprint_id,
-            blueprints.init_blueprint_storage(blueprint_id),
+            blueprint_path,
             inputs=inputs,
             install_plugins=install_plugins_,
         )
-    except ImportError as e:
+    except BaseException as e:
         e.possible_solutions = [
             "Run 'aria init --install-plugins -p {0} -b {1}'"
             .format(blueprint_path,
                     blueprint_id)
         ]
+        LOG.exception(e)
         raise e
 
     LOG.info(
@@ -82,7 +86,9 @@ def _validate_and_load_env(blueprint_id):
              "-p [path-to-blueprint]' in this directory")
         ]
         raise error
-    return blueprints.load_blueprint_storage_env(blueprint_id)
+    aria_api = api.AriaCoreAPI()
+    return aria_api.blueprints.load_blueprint_storage(
+        blueprint_id)
 
 
 def execute(blueprint_id,
@@ -91,16 +97,26 @@ def execute(blueprint_id,
             allow_custom_parameters,
             task_retries,
             task_retry_interval):
+    aria_api = api.AriaCoreAPI()
+    try:
+        aria_api.blueprints.load_blueprint_storage(blueprint_id)
+    except Exception:
+        e = exceptions.AriaError(
+            "Blueprint was not initialized.")
+        e.possible_solutions = [
+            "Run 'aria init -b [blueprint-id] "
+            "-p [path-to-blueprint]' "
+            "in this directory"
+        ]
+        raise e
     parameters = utils.inputs_to_dict(parameters, 'parameters')
-    result = workflows.generic_execute(
-        blueprint_id=blueprint_id,
-        workflow_id=workflow_id,
+    result = aria_api.executions.execute_custom(
+        blueprint_id,
+        workflow_id,
         parameters=parameters,
         allow_custom_parameters=allow_custom_parameters,
         task_retries=task_retries,
-        task_retry_interval=task_retry_interval,
-        environment=_validate_and_load_env(
-            blueprint_id))
+        task_retry_interval=task_retry_interval)
     if result:
         LOG.info(json.dumps(result,
                             sort_keys=True,
@@ -108,12 +124,15 @@ def execute(blueprint_id,
 
 
 def outputs(blueprint_id):
-    _outputs = blueprints.outputs(blueprint_id)
+    aria_api = api.AriaCoreAPI()
+    _outputs = aria_api.blueprints.outputs(blueprint_id)
     LOG.info(_outputs)
 
 
 def instances(blueprint_id, node_id):
-    node_instances = blueprints.instances(blueprint_id, node_id=node_id)
+    aria_api = api.AriaCoreAPI()
+    node_instances = aria_api.blueprints.instances(
+        blueprint_id, node_id=node_id)
     LOG.info(
         json.dumps(node_instances,
                    sort_keys=True,
@@ -124,8 +143,8 @@ def create_requirements(blueprint_path, output):
     if output and os.path.exists(output):
         raise exceptions.AriaError('output path already exists : {0}'
                                    .format(output))
-
-    requirements = blueprints.create_requirements(
+    aria_api = api.AriaCoreAPI()
+    requirements = aria_api.blueprints.create_requirements(
         blueprint_path=blueprint_path
     )
 
@@ -136,5 +155,4 @@ def create_requirements(blueprint_path, output):
             .format(output))
     else:
         for requirement in requirements:
-            print(requirement)
             LOG.info(requirement)
