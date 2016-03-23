@@ -20,7 +20,7 @@ import json
 import shutil
 import os
 
-
+from aria_cli import print_utils
 from aria_cli.commands import init as aria_cli
 
 from aria_cli import messages
@@ -30,21 +30,23 @@ from aria_core import utils
 from aria_core import logger
 
 
-LOG = logger.get_logger('aria_cli.cli.main')
+LOG = logger.get_logger(__name__)
 
 
 def validate(blueprint_path=None):
+    print(messages.VALIDATING_BLUEPRINT)
     LOG.info(messages.VALIDATING_BLUEPRINT)
     aria_api = api.AriaCoreAPI()
     aria_api.blueprints.validate(blueprint_path.name)
     LOG.info(messages.VALIDATING_BLUEPRINT_SUCCEEDED)
+    print(messages.VALIDATING_BLUEPRINT_SUCCEEDED)
 
 
 def init(blueprint_id,
          blueprint_path,
          inputs,
          install_plugins_):
-
+    print("Staring blueprint initialization.")
     aria_api = api.AriaCoreAPI()
     if os.path.isdir(utils.storage_dir(blueprint_id)):
         shutil.rmtree(utils.storage_dir(blueprint_id))
@@ -65,15 +67,18 @@ def init(blueprint_id,
             .format(blueprint_path,
                     blueprint_id)
         ]
-        LOG.exception(e)
+        LOG.exception(str(e))
+        print(str(e))
         raise e
 
-    LOG.info(
+    msg = (
         "Initiated {0}\nIf you make changes to the "
         "blueprint, "
         "Run 'aria init -b {1} -p {0}' "
         "again to apply them"
         .format(blueprint_path, blueprint_id))
+    LOG.info(msg)
+    print(msg)
 
 
 def _validate_and_load_env(blueprint_id):
@@ -97,6 +102,7 @@ def execute(blueprint_id,
             allow_custom_parameters,
             task_retries,
             task_retry_interval):
+    print("Staring blueprint deployment execution.")
     aria_api = api.AriaCoreAPI()
     try:
         aria_api.blueprints.load_blueprint_storage(blueprint_id)
@@ -110,33 +116,32 @@ def execute(blueprint_id,
         ]
         raise e
     parameters = utils.inputs_to_dict(parameters, 'parameters')
-    result = aria_api.executions.execute_custom(
+    aria_api.executions.execute_custom(
         blueprint_id,
         workflow_id,
         parameters=parameters,
         allow_custom_parameters=allow_custom_parameters,
         task_retries=task_retries,
         task_retry_interval=task_retry_interval)
-    if result:
-        LOG.info(json.dumps(result,
-                            sort_keys=True,
-                            indent=2))
+
+    print("Done. Blueprint deployment is finished.")
 
 
 def outputs(blueprint_id):
     aria_api = api.AriaCoreAPI()
     _outputs = aria_api.blueprints.outputs(blueprint_id)
-    LOG.info(_outputs)
+    if isinstance(_outputs, dict):
+        print_utils.print_dict(_outputs)
+    else:
+        print_utils.print_dict(json.loads(_outputs))
 
 
 def instances(blueprint_id, node_id):
     aria_api = api.AriaCoreAPI()
     node_instances = aria_api.blueprints.instances(
         blueprint_id, node_id=node_id)
-    LOG.info(
-        json.dumps(node_instances,
-                   sort_keys=True,
-                   indent=2))
+    for _instance in node_instances:
+        print_utils.print_dict(_instance)
 
 
 def create_requirements(blueprint_path, output):
@@ -150,9 +155,7 @@ def create_requirements(blueprint_path, output):
 
     if output:
         utils.dump_to_file(requirements, output)
-        LOG.info(
+        print(
             'Requirements created successfully --> {0}'
             .format(output))
-    else:
-        for requirement in requirements:
-            LOG.info(requirement)
+        print_utils.print_dict({'requirements': '\n'.join(requirements)})

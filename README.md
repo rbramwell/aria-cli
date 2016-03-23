@@ -29,7 +29,7 @@ ARIA's Command Line Interface.
 
 * Install the blueprint:
 
-  `aria execute -w install -b blueprint-id --allow-custom-parameters --task-retries 10 --task-retry-interval 10`
+  `aria execute -w install -b blueprint-id --task-retries 10 --task-retry-interval 10`
 
 * See blueprint deployment outputs:
 

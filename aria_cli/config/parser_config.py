@@ -151,7 +151,7 @@ def parser_config():
                     '--task-retries': {
                         'metavar': 'TASK_RETRIES',
                         'dest': 'task_retries',
-                        'default': 0,
+                        'default': 1,
                         'type': int,
                         'help': 'How many times should a task be retried in case '
                                 'it fails'

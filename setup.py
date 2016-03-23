@@ -40,6 +40,6 @@ setup(
         'pyyaml==3.10',
         'argcomplete==0.7.1',
         'jinja2==2.7.2',
-        'virtualenv-api',
+        'PrettyTable<0.8,>=0.7',
     ]
 )
