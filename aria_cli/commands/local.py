@@ -55,6 +55,11 @@ def init(blueprint_id,
         aria_cli.init(reset_config=False, skip_logging=True)
 
     try:
+        if install_plugins_:
+            requirements = aria_api.blueprints.create_requirements(
+                blueprint_path=blueprint_path
+            )
+            print_utils.print_dict({'requirements': '\n'.join(requirements)})
         aria_api.blueprints.initialize(
             blueprint_id,
             blueprint_path,
