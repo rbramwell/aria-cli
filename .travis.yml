@@ -7,16 +7,16 @@ env:
   - TOX_ENV=pep8
   - TOX_ENV=validate-local-blueprint
   - TOX_ENV=validate-multicloud-blueprint
-  - TOX_ENV=execute-local-blueprint
   - TOX_ENV=validate-bind9-blueprint
-  - TOX_ENV=py27-core-integration
   - TOX_ENV=validate-clearwater-blueprint
+  - TOX_ENV=py27-core-integration
 
 install:
   - ssh-keygen -t rsa -N "" -f ~/.ssh/id_rsa
   - cat ~/.ssh/id_rsa.pub >> ~/.ssh/authorized_keys
   - chmod +x ~/.ssh/authorized_keys
   - echo -e "StrictHostKeyChecking no\n" >> ~/.ssh/conf
+  - echo -e "AllowTcpForwarding No\n" >> ~/.ssh/conf
   - git clone --depth=50 --branch=master https://github.com/aria-tosca/aria-examples.git aria-examples
   - pip install tox
 
